@@ -126,7 +126,7 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
       </div>
 
       {/* Main Form Container with Peeking Mascot Wrapper */}
-      <div className="relative">
+      <div className="relative pt-6 sm:pt-8 pb-4">
         {/* The Random Peeking Mascot popping out behind the form */}
         <PeekingMascot />
 
@@ -137,7 +137,7 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.25 }}
-          className="relative z-10 rounded-3xl bg-card border border-border/80 shadow-2xl overflow-hidden group hover:border-orange-500/40 transition-colors"
+          className="relative z-10 rounded-3xl bg-[#0e131f] border border-orange-500/30 shadow-[0_0_60px_rgba(249,115,22,0.14)] overflow-hidden group hover:border-orange-500/60 transition-all duration-300"
         >
           {/* Interactive cursor spotlight overlay */}
           <motion.div

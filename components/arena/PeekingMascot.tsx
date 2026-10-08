@@ -3,56 +3,21 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
-export type PeekPosition =
-  | "top"
-  | "top-left"
-  | "top-right"
-  | "right"
-  | "bottom-right"
-  | "bottom"
-  | "bottom-left"
-  | "left";
+export type PeekStance = "left" | "right" | "top";
 
-const POSITIONS: PeekPosition[] = [
-  "top",
-  "top-right",
-  "right",
-  "bottom-right",
-  "bottom",
-  "bottom-left",
-  "left",
-  "top-left",
-];
-
-const PEEK_SPEECHES = [
-  "Psst... Got clean commits? 👀",
-  "Who's getting roasted today? 🔥",
-  "Let's see that git log...",
-  "Type your handle if you dare 😈",
-  "Did you push straight to main? 🚨",
-  "Looking for flagships... 🔎",
-  "Ready to judge your repos! 🍿",
-];
+const STANCES: PeekStance[] = ["left", "right", "top"];
 
 export const PeekingMascot: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
-  const [currentPos, setCurrentPos] = useState<PeekPosition>("top");
+  const [stance, setStance] = useState<PeekStance>("left");
   const [isVisible, setIsVisible] = useState(true);
   const [isSpotted, setIsSpotted] = useState(false);
-  const [speech, setSpeech] = useState<string | null>("Psst... Enter a GitHub handle! 🔥");
 
-  const triggerNextPeek = useCallback(() => {
-    setCurrentPos((prev) => {
-      const available = POSITIONS.filter((p) => p !== prev);
-      return available[Math.floor(Math.random() * available.length)] ?? "top";
+  const switchStance = useCallback(() => {
+    setStance((prev) => {
+      const remaining = STANCES.filter((s) => s !== prev);
+      return remaining[Math.floor(Math.random() * remaining.length)] ?? "left";
     });
-
-    const randomSpeech =
-      Math.random() > 0.35
-        ? PEEK_SPEECHES[Math.floor(Math.random() * PEEK_SPEECHES.length)] ?? null
-        : null;
-
-    setSpeech(randomSpeech);
     setIsSpotted(false);
     setIsVisible(true);
   }, []);
@@ -61,324 +26,541 @@ export const PeekingMascot: React.FC = () => {
     let timeoutId: NodeJS.Timeout;
 
     if (isVisible) {
-      // Stay visible for 3.5 to 5.5 seconds, then duck behind card
-      const duration = isSpotted ? 700 : 3800 + Math.random() * 1500;
+      // Stay visible and active for 6 to 9 seconds
+      const duration = isSpotted ? 800 : 7000 + Math.random() * 2000;
       timeoutId = setTimeout(() => {
         setIsVisible(false);
       }, duration);
     } else {
-      // Stay hidden behind card for 1.5 to 2.5 seconds, then pop out in a new spot
-      const waitTime = 1600 + Math.random() * 1400;
+      // Duck behind card for 1.8 to 3 seconds, then emerge in another stance
+      const waitTime = 1800 + Math.random() * 1200;
       timeoutId = setTimeout(() => {
-        triggerNextPeek();
+        switchStance();
       }, waitTime);
     }
 
     return () => clearTimeout(timeoutId);
-  }, [isVisible, isSpotted, triggerNextPeek]);
+  }, [isVisible, isSpotted, switchStance]);
 
-  // Startle reaction when clicked or hovered
+  // Click or hover startle reaction
   const handleSpot = () => {
     if (!isSpotted) {
       setIsSpotted(true);
-      setSpeech("Whoa! Spotted! 💨");
       setTimeout(() => {
         setIsVisible(false);
-      }, 550);
+      }, 600);
     }
   };
-
-  // Coordinates strictly placing mascot BEHIND the card edges
-  const getPositionClasses = (pos: PeekPosition) => {
-    switch (pos) {
-      case "top":
-        return {
-          container: "top-0 left-1/2 -translate-x-1/2 -translate-y-[68%]",
-          initial: { y: 120, opacity: 0, scale: 0.85 },
-          animate: { y: 0, opacity: 1, scale: 1 },
-          exit: { y: 120, opacity: 0, scale: 0.85 },
-          speechPos: "bottom-full mb-3 left-1/2 -translate-x-1/2",
-        };
-      case "top-left":
-        return {
-          container: "top-0 left-6 -translate-x-[20%] -translate-y-[65%] -rotate-12",
-          initial: { y: 120, x: 60, opacity: 0, scale: 0.85 },
-          animate: { y: 0, x: 0, opacity: 1, scale: 1 },
-          exit: { y: 120, x: 60, opacity: 0, scale: 0.85 },
-          speechPos: "bottom-full mb-3 left-0",
-        };
-      case "top-right":
-        return {
-          container: "top-0 right-6 translate-x-[20%] -translate-y-[65%] rotate-12",
-          initial: { y: 120, x: -60, opacity: 0, scale: 0.85 },
-          animate: { y: 0, x: 0, opacity: 1, scale: 1 },
-          exit: { y: 120, x: -60, opacity: 0, scale: 0.85 },
-          speechPos: "bottom-full mb-3 right-0",
-        };
-      case "right":
-        return {
-          container: "top-1/2 right-0 translate-x-[62%] -translate-y-1/2 rotate-[80deg]",
-          initial: { x: -120, opacity: 0, scale: 0.85 },
-          animate: { x: 0, opacity: 1, scale: 1 },
-          exit: { x: -120, opacity: 0, scale: 0.85 },
-          speechPos: "right-full mr-6 top-1/2 -translate-y-1/2 -rotate-[80deg]",
-        };
-      case "bottom-right":
-        return {
-          container: "bottom-0 right-6 translate-x-[20%] translate-y-[65%] rotate-[155deg]",
-          initial: { y: -120, x: -60, opacity: 0, scale: 0.85 },
-          animate: { y: 0, x: 0, opacity: 1, scale: 1 },
-          exit: { y: -120, x: -60, opacity: 0, scale: 0.85 },
-          speechPos: "top-full mt-3 right-0 -rotate-[155deg]",
-        };
-      case "bottom":
-        return {
-          container: "bottom-0 left-1/2 -translate-x-1/2 translate-y-[68%] rotate-180",
-          initial: { y: -120, opacity: 0, scale: 0.85 },
-          animate: { y: 0, opacity: 1, scale: 1 },
-          exit: { y: -120, opacity: 0, scale: 0.85 },
-          speechPos: "top-full mt-3 left-1/2 -translate-x-1/2 -rotate-180",
-        };
-      case "bottom-left":
-        return {
-          container: "bottom-0 left-6 -translate-x-[20%] translate-y-[65%] -rotate-[155deg]",
-          initial: { y: -120, x: 60, opacity: 0, scale: 0.85 },
-          animate: { y: 0, x: 0, opacity: 1, scale: 1 },
-          exit: { y: -120, x: 60, opacity: 0, scale: 0.85 },
-          speechPos: "top-full mt-3 left-0 rotate-[155deg]",
-        };
-      case "left":
-        return {
-          container: "top-1/2 left-0 -translate-x-[62%] -translate-y-1/2 -rotate-[80deg]",
-          initial: { x: 120, opacity: 0, scale: 0.85 },
-          animate: { x: 0, opacity: 1, scale: 1 },
-          exit: { x: 120, opacity: 0, scale: 0.85 },
-          speechPos: "left-full ml-6 top-1/2 -translate-y-1/2 rotate-[80deg]",
-        };
-    }
-  };
-
-  const posConfig = getPositionClasses(currentPos);
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-0 overflow-visible">
-      <AnimatePresence>
+    <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none z-0 overflow-visible flex items-center justify-center">
+      <AnimatePresence mode="wait">
         {isVisible && (
-          <motion.div
-            key={currentPos}
-            initial={shouldReduceMotion ? { opacity: 0 } : posConfig.initial}
-            animate={
-              shouldReduceMotion
-                ? { opacity: 1 }
-                : isSpotted
-                ? { ...posConfig.animate, scale: 1.12, transition: { duration: 0.15 } }
-                : posConfig.animate
-            }
-            exit={shouldReduceMotion ? { opacity: 0 } : posConfig.exit}
-            transition={
-              shouldReduceMotion
-                ? { duration: 0.2 }
-                : { type: "spring", stiffness: 300, damping: 24 }
-            }
-            className={`absolute pointer-events-auto cursor-pointer select-none ${posConfig.container}`}
-            onClick={handleSpot}
-            onMouseEnter={handleSpot}
-            title="Click or hover to startle the mascot!"
-          >
-            {/* Speech Bubble floating in free space */}
-            {speech && (
+          <div className="relative w-full h-full pointer-events-none">
+            {/* ======================================================== */}
+            {/* STANCE 1: LEFT PEEK (Matches reference image perfectly!) */}
+            {/* ======================================================== */}
+            {stance === "left" && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.7 }}
-                className={`absolute whitespace-nowrap px-3.5 py-1.5 rounded-xl bg-card/95 border-2 border-orange-500/80 text-xs font-mono font-bold text-foreground shadow-2xl backdrop-blur-md z-50 pointer-events-none ${posConfig.speechPos}`}
+                key="stance-left"
+                initial={shouldReduceMotion ? { opacity: 0 } : { x: -70, y: 30, opacity: 0, scale: 0.9 }}
+                animate={
+                  shouldReduceMotion
+                    ? { opacity: 1 }
+                    : isSpotted
+                    ? { x: -85, scale: 1.05, opacity: 1 }
+                    : { x: 0, y: 0, opacity: 1, scale: 1 }
+                }
+                exit={shouldReduceMotion ? { opacity: 0 } : { x: -70, y: 30, opacity: 0, scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                className="absolute inset-0 pointer-events-none"
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping" />
-                  <span>{speech}</span>
+                {/* Fox Body & Head on Left Side */}
+                <div
+                  onClick={handleSpot}
+                  onMouseEnter={handleSpot}
+                  className="absolute -left-28 sm:-left-36 -top-24 sm:-top-28 w-64 sm:w-72 h-80 sm:h-96 pointer-events-auto cursor-pointer select-none group"
+                  title="Cyber Roaster Fox"
+                >
+                  {/* Left Callout Annotation */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="absolute -top-6 -left-4 sm:-left-10 text-orange-400 font-mono text-xs sm:text-sm font-bold tracking-tight rotate-[-8deg] flex items-center gap-1 drop-shadow-md whitespace-nowrap"
+                  >
+                    <span>Let&apos;s see what you&apos;ve been shipping...</span>
+                    <span className="text-base">🔥</span>
+                  </motion.div>
+
+                  {/* SVG Illustration of Left Peeking Cyber Fox */}
+                  <svg
+                    viewBox="0 0 300 360"
+                    className="w-full h-full overflow-visible filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-300"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <defs>
+                      <linearGradient id="foxGradL" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#F97316" />
+                        <stop offset="50%" stopColor="#EA580C" />
+                        <stop offset="100%" stopColor="#C2410C" />
+                      </linearGradient>
+                      <linearGradient id="jacketGradL" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#27272A" />
+                        <stop offset="100%" stopColor="#09090B" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Left Shoulder & Tech Jacket */}
+                    <path
+                      d="M90 230 C70 200, 110 180, 160 190 L210 210 L220 340 L110 340 Z"
+                      fill="url(#jacketGradL)"
+                      stroke="#18181B"
+                      strokeWidth="4"
+                    />
+                    {/* Orange Cyber Stripes on Sleeve */}
+                    <path d="M120 220 L150 210" stroke="#F97316" strokeWidth="4" strokeLinecap="round" />
+                    <path d="M115 235 L145 225" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
+                    {/* Cyber Fox Logo on Jacket */}
+                    <polygon points="175,230 183,242 175,250 167,242" fill="#F97316" />
+
+                    {/* Fluffy White Neck / Chest Fur */}
+                    <path
+                      d="M145 185 C140 165, 175 160, 185 180 C195 195, 160 210, 145 185 Z"
+                      fill="#F8FAFC"
+                      stroke="#09090B"
+                      strokeWidth="3"
+                    />
+
+                    {/* Fox Head Group */}
+                    <g transform="translate(10, 0)">
+                      {/* Left Ear - Black Tip & White Fluff */}
+                      <path
+                        d="M60 110 C40 50, 60 10, 105 28 C120 35, 115 80, 105 110 Z"
+                        fill="url(#foxGradL)"
+                        stroke="#09090B"
+                        strokeWidth="4"
+                      />
+                      <path d="M72 45 C70 26, 85 14, 105 28 C100 40, 88 45, 72 45 Z" fill="#18181B" />
+                      <path
+                        d="M75 100 C68 70, 80 48, 98 52 C106 58, 104 80, 94 100 Z"
+                        fill="#F8FAFC"
+                      />
+                      <path d="M80 88 L92 80 L86 94 L100 86" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round" />
+
+                      {/* Right Ear */}
+                      <path
+                        d="M175 110 C190 50, 170 10, 130 28 C115 35, 118 80, 128 110 Z"
+                        fill="url(#foxGradL)"
+                        stroke="#09090B"
+                        strokeWidth="4"
+                      />
+                      <path d="M165 45 C168 26, 152 14, 130 28 C135 40, 148 45, 165 45 Z" fill="#18181B" />
+                      <path
+                        d="M162 100 C168 70, 155 48, 138 52 C130 58, 132 80, 140 100 Z"
+                        fill="#F8FAFC"
+                      />
+
+                      {/* Spiky Anime Hair Tufts */}
+                      <path
+                        d="M85 52 L102 18 L118 38 L134 14 L146 36 L158 22 L160 56 Z"
+                        fill="url(#foxGradL)"
+                        stroke="#09090B"
+                        strokeWidth="4"
+                      />
+                      <path d="M106 30 L120 18 L130 30 L140 20 L148 38" stroke="#FDBA74" strokeWidth="3" strokeLinecap="round" />
+
+                      {/* Main Head Base */}
+                      <path
+                        d="M70 100 C60 60, 175 60, 168 100 C180 130, 160 165, 118 170 C75 165, 58 130, 70 100 Z"
+                        fill="url(#foxGradL)"
+                        stroke="#09090B"
+                        strokeWidth="4.5"
+                      />
+
+                      {/* Fluffy White Cheeks */}
+                      <path
+                        d="M68 105 C48 110, 32 128, 48 142 C64 154, 92 154, 108 158 C90 142, 75 122, 68 105 Z"
+                        fill="#F8FAFC"
+                        stroke="#09090B"
+                        strokeWidth="3"
+                      />
+                      <path
+                        d="M170 105 C190 110, 206 128, 190 142 C174 154, 146 154, 130 158 C148 142, 162 122, 170 105 Z"
+                        fill="#F8FAFC"
+                        stroke="#09090B"
+                        strokeWidth="3"
+                      />
+
+                      {/* White Muzzle */}
+                      <path
+                        d="M96 122 C96 108, 144 108, 144 122 C144 152, 120 164, 120 164 C120 164, 96 152, 96 122 Z"
+                        fill="#F8FAFC"
+                        stroke="#09090B"
+                        strokeWidth="3"
+                      />
+
+                      {/* Black Fox Nose */}
+                      <path
+                        d="M112 120 C114 116, 126 116, 128 120 C130 126, 124 130, 120 131 C116 130, 110 126, 112 120 Z"
+                        fill="#09090B"
+                      />
+                      <ellipse cx="116" cy="121" rx="2" ry="1" fill="#FFFFFF" opacity="0.8" />
+
+                      {/* Confident Smug Fox Eyes */}
+                      {/* Left Eye */}
+                      <g>
+                        <path d="M82 98 C86 82, 108 86, 112 100 C108 106, 88 106, 82 98 Z" fill="#09090B" />
+                        <path d="M85 98 C88 86, 106 88, 109 99 C106 104, 90 104, 85 98 Z" fill="#FFFFFF" />
+                        <ellipse cx="98" cy="97" rx="7.5" ry="8" fill="#F97316" />
+                        <ellipse cx="99" cy="97" rx="4" ry="6.5" fill="#09090B" />
+                        <circle cx="96" cy="94" r="2.5" fill="#FFFFFF" />
+                      </g>
+
+                      {/* Right Eye */}
+                      <g>
+                        <path d="M156 98 C152 82, 130 86, 126 100 C130 106, 150 106, 156 98 Z" fill="#09090B" />
+                        <path d="M153 98 C150 86, 132 88, 129 99 C132 104, 148 104, 153 98 Z" fill="#FFFFFF" />
+                        <ellipse cx="140" cy="97" rx="7.5" ry="8" fill="#F97316" />
+                        <ellipse cx="139" cy="97" rx="4" ry="6.5" fill="#09090B" />
+                        <circle cx="142" cy="94" r="2.5" fill="#FFFFFF" />
+                      </g>
+
+                      {/* Slanted Confident Eyebrows */}
+                      <path d="M82 82 Q98 76 110 88" stroke="#09090B" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+                      <path d="M156 82 Q140 76 128 88" stroke="#09090B" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+
+                      {/* Smug Smirk with Sharp Fang */}
+                      <path d="M106 142 Q120 150, 135 138" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
+                      <polygon points="128,140 132,148 136,140" fill="#FFFFFF" stroke="#09090B" strokeWidth="1" />
+                    </g>
+
+                    {/* Cyber Paws / Gloved Hand Gripping Card Corner */}
+                    <g id="left-paw-grip">
+                      {/* Black Tech Glove */}
+                      <rect x="220" y="150" width="34" height="24" rx="10" fill="#18181B" stroke="#F97316" strokeWidth="2.5" />
+                      <circle cx="230" cy="162" r="3" fill="#F97316" />
+                      <circle cx="242" cy="162" r="3" fill="#F97316" />
+                    </g>
+                  </svg>
+                </div>
+
+                {/* Big Fluffy Fox Tail Extending from Right Side */}
+                <div className="absolute -right-20 sm:-right-32 top-16 sm:top-20 w-48 sm:w-60 h-64 sm:h-76 pointer-events-none select-none">
+                  {/* Right Annotation */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="absolute -top-6 right-0 text-amber-400 font-mono text-xs sm:text-sm font-bold tracking-tight rotate-[6deg] flex items-center gap-1 drop-shadow-md whitespace-nowrap"
+                  >
+                    <span>Brutal honesty loading...</span>
+                    <span className="text-base">😈</span>
+                  </motion.div>
+
+                  {/* SVG Giant Fluffy Tail */}
+                  <svg
+                    viewBox="0 0 240 280"
+                    className="w-full h-full overflow-visible filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)]"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {/* Tail Orange Base with Curves */}
+                    <path
+                      d="M20 250 C40 200, 60 140, 110 80 C150 30, 210 20, 230 60 C245 100, 210 180, 150 220 C100 250, 50 270, 20 250 Z"
+                      fill="url(#foxGradL)"
+                      stroke="#09090B"
+                      strokeWidth="4"
+                    />
+                    {/* Fluffy White Tail Tip */}
+                    <path
+                      d="M170 45 C190 25, 215 20, 230 60 C240 85, 225 125, 195 150 C185 130, 175 110, 185 90 C170 85, 165 65, 170 45 Z"
+                      fill="#F8FAFC"
+                      stroke="#09090B"
+                      strokeWidth="3"
+                    />
+                  </svg>
                 </div>
               </motion.div>
             )}
 
-            {/* Cyberpunk Developer Fox Peeking Illustration */}
-            <div className="relative w-48 h-44 flex items-center justify-center filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)] hover:scale-105 transition-transform">
-              <svg
-                viewBox="0 0 200 180"
-                className="w-full h-full overflow-visible"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            {/* ======================================================== */}
+            {/* STANCE 2: RIGHT PEEK (Fox on Right, Tail on Left) */}
+            {/* ======================================================== */}
+            {stance === "right" && (
+              <motion.div
+                key="stance-right"
+                initial={shouldReduceMotion ? { opacity: 0 } : { x: 70, y: 30, opacity: 0, scale: 0.9 }}
+                animate={
+                  shouldReduceMotion
+                    ? { opacity: 1 }
+                    : isSpotted
+                    ? { x: 85, scale: 1.05, opacity: 1 }
+                    : { x: 0, y: 0, opacity: 1, scale: 1 }
+                }
+                exit={shouldReduceMotion ? { opacity: 0 } : { x: 70, y: 30, opacity: 0, scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                className="absolute inset-0 pointer-events-none"
               >
-                <defs>
-                  {/* Fox Orange Gradient */}
-                  <linearGradient id="peekFoxOrange" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#F97316" />
-                    <stop offset="60%" stopColor="#EA580C" />
-                    <stop offset="100%" stopColor="#C2410C" />
-                  </linearGradient>
+                {/* Fox Body & Head on Right Side */}
+                <div
+                  onClick={handleSpot}
+                  onMouseEnter={handleSpot}
+                  className="absolute -right-28 sm:-right-36 -top-24 sm:-top-28 w-64 sm:w-72 h-80 sm:h-96 pointer-events-auto cursor-pointer select-none group"
+                  title="Cyber Roaster Fox"
+                >
+                  {/* Right Callout Annotation */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="absolute -top-6 right-0 text-orange-400 font-mono text-xs sm:text-sm font-bold tracking-tight rotate-[8deg] flex items-center gap-1 drop-shadow-md whitespace-nowrap"
+                  >
+                    <span>Checking your repo hygiene...</span>
+                    <span className="text-base">🔎</span>
+                  </motion.div>
 
-                  {/* Ambient Glow */}
-                  <radialGradient id="peekFoxAura" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#F97316" stopOpacity="0.3" />
-                    <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
-                  </radialGradient>
-                </defs>
+                  {/* SVG Illustration of Right Peeking Fox */}
+                  <svg
+                    viewBox="0 0 300 360"
+                    className="w-full h-full overflow-visible filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-300"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <defs>
+                      <linearGradient id="foxGradR" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#F97316" />
+                        <stop offset="50%" stopColor="#EA580C" />
+                        <stop offset="100%" stopColor="#C2410C" />
+                      </linearGradient>
+                    </defs>
 
-                {/* Glowing Back Aura */}
-                <circle cx="100" cy="90" r="75" fill="url(#peekFoxAura)" />
-
-                {/* ======================================================== */}
-                {/* EARS */}
-                {/* ======================================================== */}
-                {/* Left Ear */}
-                <g id="peek-left-ear">
-                  <path
-                    d="M32 90 C20 45, 36 10, 68 24 C78 28, 76 65, 68 90 Z"
-                    fill="url(#peekFoxOrange)"
-                    stroke="#09090B"
-                    strokeWidth="3.5"
-                  />
-                  <path d="M42 35 C40 22, 50 12, 68 24 C64 32, 54 36, 42 35 Z" fill="#18181B" />
-                  <path
-                    d="M42 80 C36 55, 46 38, 62 42 C68 46, 66 65, 58 80 Z"
-                    fill="#F8FAFC"
-                  />
-                  <path d="M46 70 L55 64 L50 76 L62 70" stroke="#E2E8F0" strokeWidth="2" strokeLinecap="round" />
-                </g>
-
-                {/* Right Ear */}
-                <g id="peek-right-ear">
-                  <path
-                    d="M168 90 C180 45, 164 10, 132 24 C122 28, 124 65, 132 90 Z"
-                    fill="url(#peekFoxOrange)"
-                    stroke="#09090B"
-                    strokeWidth="3.5"
-                  />
-                  <path d="M158 35 C160 22, 150 12, 132 24 C136 32, 146 36, 158 35 Z" fill="#18181B" />
-                  <path
-                    d="M158 80 C164 55, 154 38, 138 42 C132 46, 134 65, 142 80 Z"
-                    fill="#F8FAFC"
-                  />
-                  <path d="M154 70 L145 64 L150 76 L138 70" stroke="#E2E8F0" strokeWidth="2" strokeLinecap="round" />
-                </g>
-
-                {/* Spiky Anime Hair Tufts */}
-                <path
-                  d="M68 45 L82 18 L96 35 L108 12 L120 32 L132 20 L135 48 Z"
-                  fill="url(#peekFoxOrange)"
-                  stroke="#09090B"
-                  strokeWidth="3.5"
-                />
-                <path d="M86 28 L98 16 L106 28 L114 18 L122 34" stroke="#FDBA74" strokeWidth="2.5" strokeLinecap="round" />
-
-                {/* Head Base */}
-                <path
-                  d="M48 85 C42 55, 158 55, 152 85 C162 108, 148 135, 100 142 C52 135, 38 108, 48 85 Z"
-                  fill="url(#peekFoxOrange)"
-                  stroke="#09090B"
-                  strokeWidth="4"
-                />
-
-                {/* Fluffy White Cheeks */}
-                <path
-                  d="M45 88 C30 92, 18 105, 30 115 C42 125, 65 125, 78 130 C65 118, 52 102, 45 88 Z"
-                  fill="#F8FAFC"
-                  stroke="#09090B"
-                  strokeWidth="2.5"
-                />
-                <path
-                  d="M155 88 C170 92, 182 105, 170 115 C158 125, 135 125, 122 130 C135 118, 148 102, 155 88 Z"
-                  fill="#F8FAFC"
-                  stroke="#09090B"
-                  strokeWidth="2.5"
-                />
-
-                {/* White Snout Base */}
-                <path
-                  d="M74 102 C74 92, 126 92, 126 102 C126 128, 100 138, 100 138 C100 138, 74 128, 74 102 Z"
-                  fill="#F8FAFC"
-                  stroke="#09090B"
-                  strokeWidth="3"
-                />
-
-                {/* Sleek Black Fox Nose */}
-                <path
-                  d="M92 102 C94 98, 106 98, 108 102 C110 108, 104 112, 100 113 C96 112, 90 108, 92 102 Z"
-                  fill="#09090B"
-                />
-                <ellipse cx="97" cy="103" rx="2" ry="1" fill="#FFFFFF" opacity="0.7" />
-
-                {/* Eyes - Sharp, Confident, Analytical Fox Eyes */}
-                {/* Left Eye */}
-                <g>
-                  {isSpotted ? (
-                    <g>
-                      <ellipse cx="78" cy="80" rx="11" ry="13" fill="#FFFFFF" stroke="#09090B" strokeWidth="3" />
-                      <circle cx="78" cy="80" r="7" fill="#F97316" />
-                      <circle cx="78" cy="80" r="4.5" fill="#09090B" />
-                      <circle cx="75" cy="77" r="2.5" fill="#FFFFFF" />
-                    </g>
-                  ) : (
-                    <g>
-                      <path d="M62 82 C65 68, 88 72, 92 84 C88 90, 68 90, 62 82 Z" fill="#09090B" />
-                      <path d="M65 82 C68 72, 86 74, 89 83 C86 88, 70 88, 65 82 Z" fill="#FFFFFF" />
-                      <ellipse cx="78" cy="81" rx="6.5" ry="7" fill="#F97316" />
-                      <ellipse cx="79" cy="81" rx="3.5" ry="5.5" fill="#09090B" />
-                      <circle cx="77" cy="78" r="2" fill="#FFFFFF" />
-                    </g>
-                  )}
-                </g>
-
-                {/* Right Eye */}
-                <g>
-                  {isSpotted ? (
-                    <g>
-                      <ellipse cx="122" cy="80" rx="11" ry="13" fill="#FFFFFF" stroke="#09090B" strokeWidth="3" />
-                      <circle cx="122" cy="80" r="7" fill="#F97316" />
-                      <circle cx="122" cy="80" r="4.5" fill="#09090B" />
-                      <circle cx="125" cy="77" r="2.5" fill="#FFFFFF" />
-                    </g>
-                  ) : (
-                    <g>
-                      <path d="M138 82 C135 68, 112 72, 108 84 C112 90, 132 90, 138 82 Z" fill="#09090B" />
-                      <path d="M135 82 C132 72, 114 74, 111 83 C114 88, 130 88, 135 82 Z" fill="#FFFFFF" />
-                      <ellipse cx="122" cy="81" rx="6.5" ry="7" fill="#F97316" />
-                      <ellipse cx="121" cy="81" rx="3.5" ry="5.5" fill="#09090B" />
-                      <circle cx="123" cy="78" r="2" fill="#FFFFFF" />
-                    </g>
-                  )}
-                </g>
-
-                {/* Eyebrows */}
-                {isSpotted ? (
-                  <>
-                    <path d="M62 66 Q74 54 88 66" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
-                    <path d="M138 66 Q126 54 112 66" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
-                  </>
-                ) : (
-                  <>
-                    <path d="M62 68 Q78 62 90 72" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
-                    <path d="M138 68 Q122 62 110 72" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
-                  </>
-                )}
-
-                {/* Mouth (Smug Smirk with Fang) */}
-                {isSpotted ? (
-                  <ellipse cx="100" cy="122" rx="6" ry="7" fill="#09090B" />
-                ) : (
-                  <g>
+                    {/* Right Shoulder & Tech Jacket */}
                     <path
-                      d="M86 118 Q100 126 115 116"
+                      d="M210 230 C230 200, 190 180, 140 190 L90 210 L80 340 L190 340 Z"
+                      fill="#18181B"
                       stroke="#09090B"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                      fill="none"
+                      strokeWidth="4"
                     />
-                    <polygon points="108,117 112,123 115,116" fill="#FFFFFF" stroke="#09090B" strokeWidth="1" />
-                  </g>
-                )}
-              </svg>
-            </div>
-          </motion.div>
+                    <path d="M180 220 L150 210" stroke="#F97316" strokeWidth="4" strokeLinecap="round" />
+                    <polygon points="125,230 133,242 125,250 117,242" fill="#F97316" />
+
+                    {/* White Chest */}
+                    <path
+                      d="M155 185 C160 165, 125 160, 115 180 C105 195, 140 210, 155 185 Z"
+                      fill="#F8FAFC"
+                      stroke="#09090B"
+                      strokeWidth="3"
+                    />
+
+                    {/* Fox Head Group */}
+                    <g transform="translate(10, 0)">
+                      {/* Left Ear */}
+                      <path
+                        d="M60 110 C40 50, 60 10, 105 28 C120 35, 115 80, 105 110 Z"
+                        fill="url(#foxGradR)"
+                        stroke="#09090B"
+                        strokeWidth="4"
+                      />
+                      <path d="M72 45 C70 26, 85 14, 105 28 C100 40, 88 45, 72 45 Z" fill="#18181B" />
+                      <path d="M75 100 C68 70, 80 48, 98 52 C106 58, 104 80, 94 100 Z" fill="#F8FAFC" />
+
+                      {/* Right Ear */}
+                      <path
+                        d="M175 110 C190 50, 170 10, 130 28 C115 35, 118 80, 128 110 Z"
+                        fill="url(#foxGradR)"
+                        stroke="#09090B"
+                        strokeWidth="4"
+                      />
+                      <path d="M165 45 C168 26, 152 14, 130 28 C135 40, 148 45, 165 45 Z" fill="#18181B" />
+                      <path d="M162 100 C168 70, 155 48, 138 52 C130 58, 132 80, 140 100 Z" fill="#F8FAFC" />
+
+                      {/* Spiky Hair */}
+                      <path
+                        d="M85 52 L102 18 L118 38 L134 14 L146 36 L158 22 L160 56 Z"
+                        fill="url(#foxGradR)"
+                        stroke="#09090B"
+                        strokeWidth="4"
+                      />
+
+                      {/* Head Base */}
+                      <path
+                        d="M70 100 C60 60, 175 60, 168 100 C180 130, 160 165, 118 170 C75 165, 58 130, 70 100 Z"
+                        fill="url(#foxGradR)"
+                        stroke="#09090B"
+                        strokeWidth="4.5"
+                      />
+
+                      {/* Fluffy Cheeks */}
+                      <path d="M68 105 C48 110, 32 128, 48 142 C64 154, 92 154, 108 158 C90 142, 75 122, 68 105 Z" fill="#F8FAFC" stroke="#09090B" strokeWidth="3" />
+                      <path d="M170 105 C190 110, 206 128, 190 142 C174 154, 146 154, 130 158 C148 142, 162 122, 170 105 Z" fill="#F8FAFC" stroke="#09090B" strokeWidth="3" />
+
+                      {/* Snout & Nose */}
+                      <path d="M96 122 C96 108, 144 108, 144 122 C144 152, 120 164, 120 164 C120 164, 96 152, 96 122 Z" fill="#F8FAFC" stroke="#09090B" strokeWidth="3" />
+                      <path d="M112 120 C114 116, 126 116, 128 120 C130 126, 124 130, 120 131 C116 130, 110 126, 112 120 Z" fill="#09090B" />
+
+                      {/* Eyes */}
+                      <g>
+                        <path d="M82 98 C86 82, 108 86, 112 100 C108 106, 88 106, 82 98 Z" fill="#09090B" />
+                        <path d="M85 98 C88 86, 106 88, 109 99 C106 104, 90 104, 85 98 Z" fill="#FFFFFF" />
+                        <ellipse cx="98" cy="97" rx="7.5" ry="8" fill="#F97316" />
+                        <ellipse cx="99" cy="97" rx="4" ry="6.5" fill="#09090B" />
+                        <circle cx="96" cy="94" r="2.5" fill="#FFFFFF" />
+                      </g>
+                      <g>
+                        <path d="M156 98 C152 82, 130 86, 126 100 C130 106, 150 106, 156 98 Z" fill="#09090B" />
+                        <path d="M153 98 C150 86, 132 88, 129 99 C132 104, 148 104, 153 98 Z" fill="#FFFFFF" />
+                        <ellipse cx="140" cy="97" rx="7.5" ry="8" fill="#F97316" />
+                        <ellipse cx="139" cy="97" rx="4" ry="6.5" fill="#09090B" />
+                        <circle cx="142" cy="94" r="2.5" fill="#FFFFFF" />
+                      </g>
+
+                      {/* Eyebrows & Smirk */}
+                      <path d="M82 82 Q98 76 110 88" stroke="#09090B" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+                      <path d="M156 82 Q140 76 128 88" stroke="#09090B" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+                      <path d="M106 142 Q120 150, 135 138" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
+                      <polygon points="128,140 132,148 136,140" fill="#FFFFFF" stroke="#09090B" strokeWidth="1" />
+                    </g>
+
+                    {/* Right Paw Grip */}
+                    <rect x="46" y="150" width="34" height="24" rx="10" fill="#18181B" stroke="#F97316" strokeWidth="2.5" />
+                    <circle cx="56" cy="162" r="3" fill="#F97316" />
+                    <circle cx="68" cy="162" r="3" fill="#F97316" />
+                  </svg>
+                </div>
+
+                {/* Tail on Left Side */}
+                <div className="absolute -left-20 sm:-left-32 top-16 sm:top-20 w-48 sm:w-60 h-64 sm:h-76 pointer-events-none select-none">
+                  <svg
+                    viewBox="0 0 240 280"
+                    className="w-full h-full overflow-visible filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] -scale-x-100"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M20 250 C40 200, 60 140, 110 80 C150 30, 210 20, 230 60 C245 100, 210 180, 150 220 C100 250, 50 270, 20 250 Z"
+                      fill="url(#foxGradR)"
+                      stroke="#09090B"
+                      strokeWidth="4"
+                    />
+                    <path
+                      d="M170 45 C190 25, 215 20, 230 60 C240 85, 225 125, 195 150 C185 130, 175 110, 185 90 C170 85, 165 65, 170 45 Z"
+                      fill="#F8FAFC"
+                      stroke="#09090B"
+                      strokeWidth="3"
+                    />
+                  </svg>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ======================================================== */}
+            {/* STANCE 3: TOP CENTER PEEK (Peeking Over the Top Border) */}
+            {/* ======================================================== */}
+            {stance === "top" && (
+              <motion.div
+                key="stance-top"
+                initial={shouldReduceMotion ? { opacity: 0 } : { y: 60, opacity: 0, scale: 0.9 }}
+                animate={
+                  shouldReduceMotion
+                    ? { opacity: 1 }
+                    : isSpotted
+                    ? { y: -15, scale: 1.05, opacity: 1 }
+                    : { y: 0, opacity: 1, scale: 1 }
+                }
+                exit={shouldReduceMotion ? { opacity: 0 } : { y: 60, opacity: 0, scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                className="absolute inset-0 pointer-events-none"
+              >
+                {/* Fox Head & Paws Peeking from Top Center */}
+                <div
+                  onClick={handleSpot}
+                  onMouseEnter={handleSpot}
+                  className="absolute left-1/2 -translate-x-1/2 -top-28 sm:-top-32 w-64 sm:w-72 h-44 sm:h-48 pointer-events-auto cursor-pointer select-none group"
+                  title="Cyber Roaster Fox"
+                >
+                  {/* Top Speech Bubble */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute -top-6 left-1/2 -translate-x-1/2 text-orange-400 font-mono text-xs sm:text-sm font-bold tracking-tight flex items-center gap-1 drop-shadow-md whitespace-nowrap bg-card/90 px-3 py-1 rounded-full border border-orange-500/40"
+                  >
+                    <span>Ready to get roasted? Enter a username! 👀</span>
+                  </motion.div>
+
+                  <svg
+                    viewBox="0 0 260 180"
+                    className="w-full h-full overflow-visible filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-300"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <defs>
+                      <linearGradient id="foxGradT" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#F97316" />
+                        <stop offset="50%" stopColor="#EA580C" />
+                        <stop offset="100%" stopColor="#C2410C" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Ears */}
+                    <path d="M50 100 C30 40, 50 0, 95 18 C110 25, 105 70, 95 100 Z" fill="url(#foxGradT)" stroke="#09090B" strokeWidth="4" />
+                    <path d="M62 35 C60 16, 75 4, 95 18 C90 30, 78 35, 62 35 Z" fill="#18181B" />
+                    <path d="M65 90 C58 60, 70 38, 88 42 C96 48, 94 70, 84 90 Z" fill="#F8FAFC" />
+
+                    <path d="M210 100 C230 40, 210 0, 165 18 C150 25, 155 70, 165 100 Z" fill="url(#foxGradT)" stroke="#09090B" strokeWidth="4" />
+                    <path d="M198 35 C200 16, 185 4, 165 18 C170 30, 182 35, 198 35 Z" fill="#18181B" />
+                    <path d="M195 90 C202 60, 190 38, 172 42 C164 48, 166 70, 176 90 Z" fill="#F8FAFC" />
+
+                    {/* Hair */}
+                    <path d="M75 42 L92 8 L108 28 L124 4 L136 26 L148 12 L150 46 Z" fill="url(#foxGradT)" stroke="#09090B" strokeWidth="4" />
+
+                    {/* Head */}
+                    <path d="M60 90 C50 50, 210 50, 200 90 C210 120, 190 155, 130 160 C70 155, 50 120, 60 90 Z" fill="url(#foxGradT)" stroke="#09090B" strokeWidth="4.5" />
+
+                    {/* Fluffy Cheeks */}
+                    <path d="M58 95 C38 100, 22 118, 38 132 C54 144, 82 144, 98 148 C80 132, 65 112, 58 95 Z" fill="#F8FAFC" stroke="#09090B" strokeWidth="3" />
+                    <path d="M202 95 C222 100, 238 118, 222 132 C206 144, 178 144, 162 148 C180 132, 194 112, 202 95 Z" fill="#F8FAFC" stroke="#09090B" strokeWidth="3" />
+
+                    {/* Snout */}
+                    <path d="M106 112 C106 98, 154 98, 154 112 C154 142, 130 154, 130 154 C130 154, 106 142, 106 112 Z" fill="#F8FAFC" stroke="#09090B" strokeWidth="3" />
+                    <path d="M122 110 C124 106, 136 106, 138 110 C140 116, 134 120, 130 121 C126 120, 120 116, 122 110 Z" fill="#09090B" />
+
+                    {/* Eyes */}
+                    <g>
+                      <path d="M88 88 C92 72, 114 76, 118 90 C114 96, 94 96, 88 88 Z" fill="#09090B" />
+                      <path d="M91 88 C94 76, 112 78, 115 89 C112 94, 96 94, 91 88 Z" fill="#FFFFFF" />
+                      <ellipse cx="104" cy="87" rx="7" ry="7.5" fill="#F97316" />
+                      <ellipse cx="105" cy="87" rx="3.5" ry="6" fill="#09090B" />
+                      <circle cx="102" cy="84" r="2" fill="#FFFFFF" />
+                    </g>
+                    <g>
+                      <path d="M172 88 C168 72, 146 76, 142 90 C146 96, 166 96, 172 88 Z" fill="#09090B" />
+                      <path d="M169 88 C166 76, 148 78, 145 89 C148 94, 164 94, 169 88 Z" fill="#FFFFFF" />
+                      <ellipse cx="156" cy="87" rx="7" ry="7.5" fill="#F97316" />
+                      <ellipse cx="155" cy="87" rx="3.5" ry="6" fill="#09090B" />
+                      <circle cx="158" cy="84" r="2" fill="#FFFFFF" />
+                    </g>
+
+                    {/* Eyebrows & Smirk */}
+                    <path d="M88 72 Q104 66 116 78" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
+                    <path d="M172 72 Q156 66 144 78" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
+                    <path d="M116 132 Q130 140, 145 128" stroke="#09090B" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                    <polygon points="138,130 142,137 146,130" fill="#FFFFFF" stroke="#09090B" strokeWidth="1" />
+
+                    {/* Both Paws Gripping Top Edge of Card */}
+                    <rect x="70" y="160" width="30" height="20" rx="8" fill="#18181B" stroke="#F97316" strokeWidth="2.5" />
+                    <circle cx="80" cy="170" r="2.5" fill="#F97316" />
+                    <circle cx="90" cy="170" r="2.5" fill="#F97316" />
+
+                    <rect x="160" y="160" width="30" height="20" rx="8" fill="#18181B" stroke="#F97316" strokeWidth="2.5" />
+                    <circle cx="170" cy="170" r="2.5" fill="#F97316" />
+                    <circle cx="180" cy="170" r="2.5" fill="#F97316" />
+                  </svg>
+                </div>
+              </motion.div>
+            )}
+          </div>
         )}
       </AnimatePresence>
     </div>
