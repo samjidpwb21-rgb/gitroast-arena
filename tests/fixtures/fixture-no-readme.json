@@ -1,0 +1,103 @@
+{
+  "user": {
+    "__typename": "User",
+    "login": "noreadmer",
+    "name": "No Readme",
+    "bio": "Code speaks for itself.",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1000004",
+    "company": null,
+    "location": null,
+    "websiteUrl": null,
+    "createdAt": "2023-01-01T00:00:00Z",
+    "followers": { "totalCount": 5 },
+    "following": { "totalCount": 10 },
+    "pinnedItems": { "nodes": [] },
+    "profileReadme": null,
+    "contributionsCollection": {
+      "contributionCalendar": {
+        "totalContributions": 200
+      }
+    },
+    "repositories": {
+      "totalCount": 4,
+      "nodes": [
+        {
+          "name": "secret-engine",
+          "nameWithOwner": "noreadmer/secret-engine",
+          "description": "Custom game engine in Rust.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 15,
+          "forkCount": 1,
+          "pushedAt": "2026-09-01T00:00:00Z",
+          "updatedAt": "2026-09-01T00:00:00Z",
+          "createdAt": "2024-01-01T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "Rust" },
+          "languages": { "edges": [{ "size": 60000, "node": { "name": "Rust" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        },
+        {
+          "name": "algo-practice",
+          "nameWithOwner": "noreadmer/algo-practice",
+          "description": "LeetCode solutions and algorithms.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 2,
+          "forkCount": 0,
+          "pushedAt": "2026-08-15T00:00:00Z",
+          "updatedAt": "2026-08-15T00:00:00Z",
+          "createdAt": "2024-02-01T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "Python" },
+          "languages": { "edges": [{ "size": 25000, "node": { "name": "Python" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        },
+        {
+          "name": "network-scanner",
+          "nameWithOwner": "noreadmer/network-scanner",
+          "description": "Simple port scanner utility.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 5,
+          "forkCount": 0,
+          "pushedAt": "2026-07-20T00:00:00Z",
+          "updatedAt": "2026-07-20T00:00:00Z",
+          "createdAt": "2024-03-01T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "Go" },
+          "languages": { "edges": [{ "size": 18000, "node": { "name": "Go" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        },
+        {
+          "name": "web-scraper",
+          "nameWithOwner": "noreadmer/web-scraper",
+          "description": "Scrapes job boards.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 3,
+          "forkCount": 0,
+          "pushedAt": "2026-06-10T00:00:00Z",
+          "updatedAt": "2026-06-10T00:00:00Z",
+          "createdAt": "2024-04-01T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "Python" },
+          "languages": { "edges": [{ "size": 12000, "node": { "name": "Python" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        }
+      ]
+    }
+  }
+}

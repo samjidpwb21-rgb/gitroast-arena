@@ -1,0 +1,22 @@
+{
+  "user": {
+    "__typename": "Organization",
+    "login": "facebook",
+    "name": "Meta",
+    "bio": "Open source projects from Meta.",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/69631",
+    "company": null,
+    "location": "Menlo Park, CA",
+    "websiteUrl": "https://opensource.fb.com",
+    "createdAt": "2009-04-02T00:00:00Z",
+    "followers": { "totalCount": 25000 },
+    "following": { "totalCount": 0 },
+    "pinnedItems": { "nodes": [] },
+    "profileReadme": null,
+    "contributionsCollection": null,
+    "repositories": {
+      "totalCount": 150,
+      "nodes": []
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "user": {
+    "__typename": "Bot",
+    "login": "dependabot",
+    "name": "Dependabot",
+    "bio": "Automated dependency updater.",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/27347476",
+    "company": null,
+    "location": null,
+    "websiteUrl": null,
+    "createdAt": "2017-04-18T00:00:00Z",
+    "followers": { "totalCount": 1500 },
+    "following": { "totalCount": 0 },
+    "pinnedItems": { "nodes": [] },
+    "profileReadme": null,
+    "contributionsCollection": null,
+    "repositories": {
+      "totalCount": 2,
+      "nodes": []
+    }
+  }
+}

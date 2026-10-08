@@ -1,0 +1,103 @@
+{
+  "user": {
+    "__typename": "User",
+    "login": "dormantcoder",
+    "name": "Dormant Coder",
+    "bio": "Coding in a past era.",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1000003",
+    "company": null,
+    "location": null,
+    "websiteUrl": null,
+    "createdAt": "2018-03-01T00:00:00Z",
+    "followers": { "totalCount": 10 },
+    "following": { "totalCount": 5 },
+    "pinnedItems": { "nodes": [] },
+    "profileReadme": null,
+    "contributionsCollection": {
+      "contributionCalendar": {
+        "totalContributions": 0
+      }
+    },
+    "repositories": {
+      "totalCount": 4,
+      "nodes": [
+        {
+          "name": "ancient-game",
+          "nameWithOwner": "dormantcoder/ancient-game",
+          "description": "Flash game clone written in Canvas.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 2,
+          "forkCount": 0,
+          "pushedAt": "2023-01-15T00:00:00Z",
+          "updatedAt": "2023-01-15T00:00:00Z",
+          "createdAt": "2022-01-15T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "JavaScript" },
+          "languages": { "edges": [{ "size": 15000, "node": { "name": "JavaScript" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        },
+        {
+          "name": "vintage-parser",
+          "nameWithOwner": "dormantcoder/vintage-parser",
+          "description": "XML parser written during college.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 1,
+          "forkCount": 0,
+          "pushedAt": "2022-06-20T00:00:00Z",
+          "updatedAt": "2022-06-20T00:00:00Z",
+          "createdAt": "2021-06-20T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "C++" },
+          "languages": { "edges": [{ "size": 25000, "node": { "name": "C++" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        },
+        {
+          "name": "old-portfolio",
+          "nameWithOwner": "dormantcoder/old-portfolio",
+          "description": "Static HTML portfolio.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 0,
+          "forkCount": 0,
+          "pushedAt": "2021-08-10T00:00:00Z",
+          "updatedAt": "2021-08-10T00:00:00Z",
+          "createdAt": "2021-08-10T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "HTML" },
+          "languages": { "edges": [{ "size": 8000, "node": { "name": "HTML" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        },
+        {
+          "name": "abandoned-bot",
+          "nameWithOwner": "dormantcoder/abandoned-bot",
+          "description": "IRC chatbot.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 0,
+          "forkCount": 0,
+          "pushedAt": "2020-04-05T00:00:00Z",
+          "updatedAt": "2020-04-05T00:00:00Z",
+          "createdAt": "2020-04-05T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "Python" },
+          "languages": { "edges": [{ "size": 6000, "node": { "name": "Python" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        }
+      ]
+    }
+  }
+}

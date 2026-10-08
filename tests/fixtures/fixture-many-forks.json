@@ -1,0 +1,122 @@
+{
+  "user": {
+    "__typename": "User",
+    "login": "forkcollector",
+    "name": "Fork Collector",
+    "bio": "Bookmarking open source via forks.",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1000005",
+    "company": null,
+    "location": null,
+    "websiteUrl": null,
+    "createdAt": "2022-02-01T00:00:00Z",
+    "followers": { "totalCount": 12 },
+    "following": { "totalCount": 80 },
+    "pinnedItems": { "nodes": [] },
+    "profileReadme": null,
+    "contributionsCollection": {
+      "contributionCalendar": {
+        "totalContributions": 50
+      }
+    },
+    "repositories": {
+      "totalCount": 5,
+      "nodes": [
+        {
+          "name": "react",
+          "nameWithOwner": "forkcollector/react",
+          "description": "The library for web and native user interfaces.",
+          "isFork": true,
+          "isArchived": false,
+          "stargazerCount": 0,
+          "forkCount": 0,
+          "pushedAt": "2026-09-01T00:00:00Z",
+          "updatedAt": "2026-09-01T00:00:00Z",
+          "createdAt": "2024-01-01T00:00:00Z",
+          "homepageUrl": "https://react.dev",
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": { "nodes": [{ "topic": { "name": "react" } }] },
+          "primaryLanguage": { "name": "JavaScript" },
+          "languages": { "edges": [{ "size": 100000, "node": { "name": "JavaScript" } }] },
+          "readmeUpper": { "text": "# React" },
+          "readmeLower": null
+        },
+        {
+          "name": "next.js",
+          "nameWithOwner": "forkcollector/next.js",
+          "description": "The React Framework.",
+          "isFork": true,
+          "isArchived": false,
+          "stargazerCount": 0,
+          "forkCount": 0,
+          "pushedAt": "2026-08-01T00:00:00Z",
+          "updatedAt": "2026-08-01T00:00:00Z",
+          "createdAt": "2024-02-01T00:00:00Z",
+          "homepageUrl": "https://nextjs.org",
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": { "nodes": [{ "topic": { "name": "nextjs" } }] },
+          "primaryLanguage": { "name": "TypeScript" },
+          "languages": { "edges": [{ "size": 150000, "node": { "name": "TypeScript" } }] },
+          "readmeUpper": { "text": "# Next.js" },
+          "readmeLower": null
+        },
+        {
+          "name": "tailwindcss",
+          "nameWithOwner": "forkcollector/tailwindcss",
+          "description": "A utility-first CSS framework.",
+          "isFork": true,
+          "isArchived": false,
+          "stargazerCount": 0,
+          "forkCount": 0,
+          "pushedAt": "2026-07-01T00:00:00Z",
+          "updatedAt": "2026-07-01T00:00:00Z",
+          "createdAt": "2024-03-01T00:00:00Z",
+          "homepageUrl": "https://tailwindcss.com",
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "CSS" },
+          "languages": { "edges": [{ "size": 80000, "node": { "name": "CSS" } }] },
+          "readmeUpper": { "text": "# Tailwind CSS" },
+          "readmeLower": null
+        },
+        {
+          "name": "my-single-script",
+          "nameWithOwner": "forkcollector/my-single-script",
+          "description": "A small utility I wrote.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 1,
+          "forkCount": 0,
+          "pushedAt": "2026-05-01T00:00:00Z",
+          "updatedAt": "2026-05-01T00:00:00Z",
+          "createdAt": "2024-04-01T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "Python" },
+          "languages": { "edges": [{ "size": 1000, "node": { "name": "Python" } }] },
+          "readmeUpper": { "text": "# Script" },
+          "readmeLower": null
+        },
+        {
+          "name": "express",
+          "nameWithOwner": "forkcollector/express",
+          "description": "Fast, unopinionated, minimalist web framework.",
+          "isFork": true,
+          "isArchived": false,
+          "stargazerCount": 0,
+          "forkCount": 0,
+          "pushedAt": "2026-04-01T00:00:00Z",
+          "updatedAt": "2026-04-01T00:00:00Z",
+          "createdAt": "2024-04-01T00:00:00Z",
+          "homepageUrl": "https://expressjs.com",
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "JavaScript" },
+          "languages": { "edges": [{ "size": 60000, "node": { "name": "JavaScript" } }] },
+          "readmeUpper": { "text": "# Express" },
+          "readmeLower": null
+        }
+      ]
+    }
+  }
+}

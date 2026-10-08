@@ -1,0 +1,46 @@
+{
+  "user": {
+    "__typename": "User",
+    "login": "newuser",
+    "name": "New User",
+    "bio": null,
+    "avatarUrl": "https://avatars.githubusercontent.com/u/9999999",
+    "company": null,
+    "location": null,
+    "websiteUrl": null,
+    "createdAt": "2026-09-01T00:00:00Z",
+    "followers": { "totalCount": 1 },
+    "following": { "totalCount": 2 },
+    "pinnedItems": { "nodes": [] },
+    "profileReadme": null,
+    "contributionsCollection": {
+      "contributionCalendar": {
+        "totalContributions": 5
+      }
+    },
+    "repositories": {
+      "totalCount": 1,
+      "nodes": [
+        {
+          "name": "hello-world",
+          "nameWithOwner": "newuser/hello-world",
+          "description": null,
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 0,
+          "forkCount": 0,
+          "pushedAt": "2026-09-05T00:00:00Z",
+          "updatedAt": "2026-09-05T00:00:00Z",
+          "createdAt": "2026-09-05T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "JavaScript" },
+          "languages": { "edges": [{ "size": 500, "node": { "name": "JavaScript" } }] },
+          "readmeUpper": null,
+          "readmeLower": null
+        }
+      ]
+    }
+  }
+}

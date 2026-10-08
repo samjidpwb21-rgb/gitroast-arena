@@ -1,0 +1,203 @@
+{
+  "user": {
+    "__typename": "User",
+    "login": "alexdev",
+    "name": "Alex Developer",
+    "bio": "Building resilient distributed systems and web architectures.",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1000001",
+    "company": "Tech Corp",
+    "location": "San Francisco, CA",
+    "websiteUrl": "https://alexdev.io",
+    "createdAt": "2020-01-15T00:00:00Z",
+    "followers": { "totalCount": 250 },
+    "following": { "totalCount": 85 },
+    "pinnedItems": {
+      "nodes": [
+        { "name": "distributed-queue" },
+        { "name": "fast-router" },
+        { "name": "data-pipeline" }
+      ]
+    },
+    "profileReadme": {
+      "object": {
+        "text": "# Welcome! I am Alex.\n\nPassionate about cloud architecture, TypeScript, and Rust."
+      }
+    },
+    "contributionsCollection": {
+      "contributionCalendar": {
+        "totalContributions": 1250
+      }
+    },
+    "repositories": {
+      "totalCount": 6,
+      "nodes": [
+        {
+          "name": "distributed-queue",
+          "nameWithOwner": "alexdev/distributed-queue",
+          "description": "High throughput distributed event queue built with Go and Raft consensus.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 180,
+          "forkCount": 42,
+          "pushedAt": "2026-10-01T12:00:00Z",
+          "updatedAt": "2026-10-01T12:00:00Z",
+          "createdAt": "2024-03-10T00:00:00Z",
+          "homepageUrl": "https://queue.alexdev.io",
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": {
+            "nodes": [
+              { "topic": { "name": "distributed-systems" } },
+              { "topic": { "name": "golang" } },
+              { "topic": { "name": "raft" } }
+            ]
+          },
+          "primaryLanguage": { "name": "Go" },
+          "languages": {
+            "edges": [
+              { "size": 85000, "node": { "name": "Go" } },
+              { "size": 12000, "node": { "name": "Shell" } }
+            ]
+          },
+          "readmeUpper": {
+            "text": "# Distributed Queue\n\nHigh throughput distributed event queue.\n\n## Installation\n\n```bash\ngo get github.com/alexdev/distributed-queue\n```\n\n## Usage\n\n```go\nqueue.StartWorker()\n```\n\n![Architecture Diagram](https://example.com/arch.png)\n\nExtensive production documentation detailing performance metrics, cluster scaling, and chaos test suites."
+          },
+          "readmeLower": null
+        },
+        {
+          "name": "fast-router",
+          "nameWithOwner": "alexdev/fast-router",
+          "description": "Blazing fast HTTP router implemented with zero-allocation radix trees.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 95,
+          "forkCount": 18,
+          "pushedAt": "2026-09-20T10:00:00Z",
+          "updatedAt": "2026-09-20T10:00:00Z",
+          "createdAt": "2023-08-15T00:00:00Z",
+          "homepageUrl": "https://router.alexdev.io",
+          "licenseInfo": { "spdxId": "Apache-2.0" },
+          "repositoryTopics": {
+            "nodes": [
+              { "topic": { "name": "router" } },
+              { "topic": { "name": "http" } },
+              { "topic": { "name": "rust" } }
+            ]
+          },
+          "primaryLanguage": { "name": "Rust" },
+          "languages": {
+            "edges": [
+              { "size": 65000, "node": { "name": "Rust" } }
+            ]
+          },
+          "readmeUpper": {
+            "text": "# Fast Router\n\nBlazing fast HTTP router.\n\n## Setup\n\nAdd to Cargo.toml.\n\n## Example\n\n```rust\nlet mut router = Router::new();\n```\n\nBenchmarked against top competitors."
+          },
+          "readmeLower": null
+        },
+        {
+          "name": "data-pipeline",
+          "nameWithOwner": "alexdev/data-pipeline",
+          "description": "Stream processing pipeline for real-time telemetry processing.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 50,
+          "forkCount": 9,
+          "pushedAt": "2026-08-15T08:00:00Z",
+          "updatedAt": "2026-08-15T08:00:00Z",
+          "createdAt": "2023-01-20T00:00:00Z",
+          "homepageUrl": "https://telemetry.alexdev.io",
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": {
+            "nodes": [
+              { "topic": { "name": "data-engineering" } },
+              { "topic": { "name": "python" } }
+            ]
+          },
+          "primaryLanguage": { "name": "Python" },
+          "languages": {
+            "edges": [
+              { "size": 45000, "node": { "name": "Python" } }
+            ]
+          },
+          "readmeUpper": {
+            "text": "# Data Pipeline\n\n## Quickstart\n\nRun python pipeline.py to start processing telemetry events.\n\n## Usage Details\n\nComprehensive instructions here."
+          },
+          "readmeLower": null
+        },
+        {
+          "name": "developer-cli",
+          "nameWithOwner": "alexdev/developer-cli",
+          "description": "Developer productivity CLI toolkit for daily automation.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 35,
+          "forkCount": 5,
+          "pushedAt": "2026-07-10T14:00:00Z",
+          "updatedAt": "2026-07-10T14:00:00Z",
+          "createdAt": "2024-05-01T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": {
+            "nodes": [{ "topic": { "name": "cli" } }, { "topic": { "name": "typescript" } }]
+          },
+          "primaryLanguage": { "name": "TypeScript" },
+          "languages": {
+            "edges": [{ "size": 30000, "node": { "name": "TypeScript" } }]
+          },
+          "readmeUpper": {
+            "text": "# Dev CLI\n\n## Installation\n\nnpm install -g dev-cli\n\n## Usage\n\ndev-cli run"
+          },
+          "readmeLower": null
+        },
+        {
+          "name": "metrics-visualizer",
+          "nameWithOwner": "alexdev/metrics-visualizer",
+          "description": "Interactive metrics dashboard for real-time observability.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 28,
+          "forkCount": 3,
+          "pushedAt": "2026-06-25T11:00:00Z",
+          "updatedAt": "2026-06-25T11:00:00Z",
+          "createdAt": "2024-02-14T00:00:00Z",
+          "homepageUrl": "https://metrics.alexdev.io",
+          "licenseInfo": { "spdxId": "MIT" },
+          "repositoryTopics": {
+            "nodes": [{ "topic": { "name": "dashboard" } }]
+          },
+          "primaryLanguage": { "name": "TypeScript" },
+          "languages": {
+            "edges": [{ "size": 42000, "node": { "name": "TypeScript" } }]
+          },
+          "readmeUpper": {
+            "text": "# Metrics Visualizer\n\n## Getting Started\n\nRun npm start.\n\n## Usage\n\nOpen dashboard on port 3000."
+          },
+          "readmeLower": null
+        },
+        {
+          "name": "learning-rust-notes",
+          "nameWithOwner": "alexdev/learning-rust-notes",
+          "description": "Personal exploration notes and code snippets while learning Rust.",
+          "isFork": false,
+          "isArchived": false,
+          "stargazerCount": 12,
+          "forkCount": 1,
+          "pushedAt": "2026-05-10T09:00:00Z",
+          "updatedAt": "2026-05-10T09:00:00Z",
+          "createdAt": "2022-09-01T00:00:00Z",
+          "homepageUrl": null,
+          "licenseInfo": null,
+          "repositoryTopics": { "nodes": [] },
+          "primaryLanguage": { "name": "Rust" },
+          "languages": {
+            "edges": [{ "size": 15000, "node": { "name": "Rust" } }]
+          },
+          "readmeUpper": {
+            "text": "# Rust Notes\n\nRandom notes."
+          },
+          "readmeLower": null
+        }
+      ]
+    }
+  }
+}
