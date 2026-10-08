@@ -95,72 +95,89 @@ async function executeUpstreamQuery(username: string, clock: Date): Promise<GitH
       message?: string;
       errors?: Array<{ type?: string; message?: string }>;
       headers?: Record<string, string>;
+      data?: RawGraphQLResponse;
     };
 
-    const status = errorObj.status;
-
-    // Rate Limit Check (403, 429, or GraphQL RATE_LIMITED error)
-    const isRateLimited =
-      status === 403 ||
-      status === 429 ||
-      Boolean(errorObj.errors?.some((e) => e.type === "RATE_LIMITED" || /rate limit/i.test(e.message ?? "")));
-
-    if (isRateLimited) {
-      let resetDate: Date | undefined;
-      const resetHeader = errorObj.headers?.["x-ratelimit-reset"];
-      if (resetHeader) {
-        const timestamp = parseInt(resetHeader, 10);
-        if (!isNaN(timestamp)) {
-          resetDate = new Date(timestamp * 1000);
-        }
+    // If GraphQL returned partial data with user (e.g. user exists, but optional profileReadme repo does not)
+    if (errorObj.data?.user) {
+      rawResponse = errorObj.data;
+    } else {
+      // Check if target is an organization
+      if (errorObj.data?.repositoryOwner?.__typename === "Organization") {
+        throw createGitHubError({
+          code: "UNSUPPORTED_ACCOUNT_TYPE",
+          message: "Target account is an Organization.",
+          userFacingMessage:
+            "Organizations cannot be roasted directly. Please provide an individual developer username.",
+          status: 400,
+        });
       }
 
-      throw createGitHubError({
-        code: "RATE_LIMITED",
-        message: "GitHub API rate limit encountered.",
-        userFacingMessage: resetDate
-          ? `GitHub API rate limit reached. Resets at ${resetDate.toLocaleTimeString()}.`
-          : "GitHub API rate limit reached. Please wait before retrying.",
-        rateLimitReset: resetDate,
-        status: status ?? 429,
-      });
-    }
+      const status = errorObj.status;
 
-    // User Not Found Check (GraphQL NOT_FOUND)
-    const isNotFound =
-      status === 404 ||
-      Boolean(
-        errorObj.errors?.some(
-          (e) => e.type === "NOT_FOUND" || /could not resolve to a User/i.test(e.message ?? "")
-        )
-      );
+      // Rate Limit Check (403, 429, or GraphQL RATE_LIMITED error)
+      const isRateLimited =
+        status === 403 ||
+        status === 429 ||
+        Boolean(errorObj.errors?.some((e) => e.type === "RATE_LIMITED" || /rate limit/i.test(e.message ?? "")));
 
-    if (isNotFound) {
-      throw createGitHubError({
-        code: "USER_NOT_FOUND",
-        message: `User '${username}' not found on GitHub.`,
-        userFacingMessage: `GitHub user '${username}' not found. Please double-check the spelling.`,
-        status: 404,
-      });
-    }
+      if (isRateLimited) {
+        let resetDate: Date | undefined;
+        const resetHeader = errorObj.headers?.["x-ratelimit-reset"];
+        if (resetHeader) {
+          const timestamp = parseInt(resetHeader, 10);
+          if (!isNaN(timestamp)) {
+            resetDate = new Date(timestamp * 1000);
+          }
+        }
 
-    // Upstream server errors (500, 502, 503, 504)
-    if (status && status >= 500) {
+        throw createGitHubError({
+          code: "RATE_LIMITED",
+          message: "GitHub API rate limit encountered.",
+          userFacingMessage: resetDate
+            ? `GitHub API rate limit reached. Resets at ${resetDate.toLocaleTimeString()}.`
+            : "GitHub API rate limit reached. Please wait before retrying.",
+          rateLimitReset: resetDate,
+          status: status ?? 429,
+        });
+      }
+
+      // User Not Found Check (specifically could not resolve to a User)
+      const isNotFound =
+        status === 404 ||
+        Boolean(
+          errorObj.errors?.some(
+            (e) => /could not resolve to a User/i.test(e.message ?? "")
+          )
+        );
+
+      if (isNotFound) {
+        throw createGitHubError({
+          code: "USER_NOT_FOUND",
+          message: `User '${username}' not found on GitHub.`,
+          userFacingMessage: `GitHub user '${username}' not found. Please double-check the spelling.`,
+          status: 404,
+        });
+      }
+
+      // Upstream server errors (500, 502, 503, 504)
+      if (status && status >= 500) {
+        throw createGitHubError({
+          code: "GITHUB_UNAVAILABLE",
+          message: `GitHub returned server error: ${status}`,
+          userFacingMessage: "GitHub appears temporarily unavailable. Please retry in a minute.",
+          status,
+        });
+      }
+
+      // Fallback error
       throw createGitHubError({
         code: "GITHUB_UNAVAILABLE",
-        message: `GitHub returned server error: ${status}`,
-        userFacingMessage: "GitHub appears temporarily unavailable. Please retry in a minute.",
+        message: errorObj.message || "Unknown error during GitHub GraphQL query.",
+        userFacingMessage: "Failed to communicate with GitHub. Please check the username or try later.",
         status,
       });
     }
-
-    // Fallback error
-    throw createGitHubError({
-      code: "GITHUB_UNAVAILABLE",
-      message: errorObj.message || "Unknown error during GitHub GraphQL query.",
-      userFacingMessage: "Failed to communicate with GitHub. Please check the username or try later.",
-      status,
-    });
   } finally {
     clearTimeout(timeoutId);
   }

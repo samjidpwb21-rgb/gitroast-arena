@@ -55,6 +55,10 @@ export interface RawGraphQLUserPayload {
 
 export interface RawGraphQLResponse {
   user: RawGraphQLUserPayload | null;
+  repositoryOwner?: {
+    __typename: string;
+    login: string;
+  } | null;
 }
 
 function safeUrl(raw: string | null | undefined): string | null {
@@ -78,6 +82,15 @@ export function normalizeGitHubResponse(
   fetchedAt: Date = new Date()
 ): GitHubSnapshot {
   if (!raw.user) {
+    if (raw.repositoryOwner?.__typename === "Organization") {
+      throw createGitHubError({
+        code: "UNSUPPORTED_ACCOUNT_TYPE",
+        message: "Target account is an Organization.",
+        userFacingMessage:
+          "Organizations cannot be roasted directly. Please provide an individual developer username.",
+      });
+    }
+
     throw createGitHubError({
       code: "USER_NOT_FOUND",
       message: "GitHub user not found in response.",

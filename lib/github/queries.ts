@@ -5,6 +5,10 @@
  */
 export const GITHUB_PORTFOLIO_QUERY = `
 query GetUserPortfolio($login: String!) {
+  repositoryOwner(login: $login) {
+    __typename
+    login
+  }
   user(login: $login) {
     __typename
     login
