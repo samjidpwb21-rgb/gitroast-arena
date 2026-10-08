@@ -69,6 +69,27 @@ export const ROAST_TRIGGERS = {
   staleFlagshipDays: 180,
 } as const;
 
+export const SCORE_TIERS = {
+  critical: { min: 0, max: 24, label: "Critical" },
+  rough: { min: 25, max: 44, label: "Rough" },
+  needsWork: { min: 45, max: 59, label: "Needs Work" },
+  decent: { min: 60, max: 74, label: "Decent" },
+  strong: { min: 75, max: 89, label: "Strong" },
+  elite: { min: 90, max: 100, label: "Elite" },
+} as const;
+
+export type ScoreTier = keyof typeof SCORE_TIERS | "insufficientData";
+
+export function getScoreTier(score: number, insufficientData?: boolean): ScoreTier {
+  if (insufficientData) return "insufficientData";
+  if (score < 25) return "critical";
+  if (score < 45) return "rough";
+  if (score < 60) return "needsWork";
+  if (score < 75) return "decent";
+  if (score < 90) return "strong";
+  return "elite";
+}
+
 // Rule Interface for the Rule Engine
 export interface ScoringRule {
   id: string;

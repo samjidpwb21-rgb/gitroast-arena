@@ -14,7 +14,7 @@ import { RoastDeck } from "./RoastDeck";
 import { RescuePlanView } from "./RescuePlanView";
 import { RecruiterView } from "./RecruiterView";
 import { EvidenceDrawer } from "./EvidenceDrawer";
-import { Mascot } from "./Mascot";
+import { WelcomeRoast } from "./WelcomeRoast";
 import { AestheticBackground } from "./AestheticBackground";
 import {
   BarChart2,
@@ -239,10 +239,10 @@ export const ArenaView: React.FC = () => {
         {/* Stage 3: Ready / Results Dashboard */}
         {state.stage === "ready" && state.result && (
           <div className="flex flex-col gap-8 pb-16">
-            {/* Results Header with Mascot & Profile Meta */}
+            {/* Results Header with Welcome Roast Mascot & Profile Meta */}
             <div className="bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg">
               <div className="flex items-center gap-5">
-                <Mascot pose={state.mascotPose} speech={state.mascotSpeech} size="sm" />
+                <WelcomeRoast result={state.result} scoreDelta={scoreDelta} />
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <h1 className="text-2xl sm:text-3xl font-black text-foreground">
