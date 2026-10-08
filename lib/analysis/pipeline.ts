@@ -14,6 +14,7 @@ import { generateEvidence } from "./evidence";
 import { generateRecruiterSummary } from "./recruiter";
 import { selectRoastCards } from "@/lib/roast/select";
 import { generateRescuePlan } from "@/lib/rescue/simulator";
+import { enhanceAnalysisWithAI } from "@/lib/ai/enhancer";
 import { ENGINE_VERSION } from "@/config/scoring";
 
 export interface AnalyzePortfolioOptions {
@@ -92,7 +93,30 @@ export async function analyzePortfolio(
     targetRole,
   });
 
-  // 8. Assemble AnalysisResult
+  // 8. Optional non-blocking AI enhancement layer (2.5s timeout, structured evidence only)
+  let finalRoasts = roasts;
+  let finalRecruiter = recruiter;
+  let aiEnhanced = false;
+
+  try {
+    const enhanced = await enhanceAnalysisWithAI({
+      username: snapshot.profile.login,
+      roastLevel,
+      targetRole,
+      facts,
+      score: scores.portfolioReadiness,
+      roasts,
+      evidence,
+      recruiter,
+    });
+    finalRoasts = enhanced.roasts;
+    finalRecruiter = enhanced.recruiter;
+    aiEnhanced = enhanced.aiEnhanced;
+  } catch {
+    // Graceful fallback to deterministic output
+  }
+
+  // 9. Assemble AnalysisResult
   const analysisResult: AnalysisResult = {
     id: generateAnalysisId(),
     metadata: {
@@ -102,15 +126,15 @@ export async function analyzePortfolio(
       generatedAt: clock.toISOString(),
       snapshotFetchedAt: snapshot.fetchedAt,
       fromCache,
-      aiEnhanced: false,
+      aiEnhanced,
       engineVersion: ENGINE_VERSION,
       insufficientData: facts.insufficientData,
     },
     facts,
     scores,
     evidence,
-    roasts,
-    recruiter,
+    roasts: finalRoasts,
+    recruiter: finalRecruiter,
     rescue,
   };
 

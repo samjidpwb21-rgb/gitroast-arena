@@ -96,7 +96,7 @@ export const ArenaView: React.FC = () => {
           throw new Error(data.error || `Analysis failed (${response.status})`);
         }
 
-        const result: AnalysisResult = data;
+        const result: AnalysisResult = data.result ?? data;
         saveSnapshot(result);
         dispatch({ type: "ANALYSIS_SUCCESS", result });
         setActiveTab("overview");
