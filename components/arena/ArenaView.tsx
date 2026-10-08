@@ -141,11 +141,34 @@ export const ArenaView: React.FC = () => {
     setSelectedRoast(null);
   };
 
+  // Page-level cursor glow
+  const cursorX = React.useRef(0);
+  const cursorY = React.useRef(0);
+  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+
+  const handlePageMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    cursorX.current = e.clientX;
+    cursorY.current = e.clientY;
+    setCursorPos({ x: e.clientX, y: e.clientY });
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
-      {/* Background radial glow */}
-      <div className="fixed inset-0 pointer-events-none -z-10 flex items-center justify-center">
-        <div className="w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px]" />
+    <div
+      onMouseMove={handlePageMouseMove}
+      className="min-h-screen bg-background text-foreground flex flex-col items-center relative overflow-x-hidden"
+    >
+      {/* Dynamic Cursor-following Ambient Glow */}
+      <div
+        className="fixed pointer-events-none -z-10 w-[500px] h-[500px] rounded-full bg-orange-500/8 blur-[120px] transition-all duration-300 ease-out"
+        style={{
+          left: `${cursorPos.x - 250}px`,
+          top: `${cursorPos.y - 250}px`,
+        }}
+      />
+
+      {/* Main static backdrop */}
+      <div className="fixed inset-0 pointer-events-none -z-20 flex items-center justify-center">
+        <div className="w-[700px] h-[700px] bg-primary/5 rounded-full blur-[160px]" />
       </div>
 
       {/* Main App Header */}
