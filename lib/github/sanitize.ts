@@ -59,13 +59,13 @@ export function parseReadme(rawText: string | null | undefined): ReadmeSummary {
 
   // Install section check
   const hasInstallSection =
-    /(?:#+\s*|\b)(install|installation|setup|getting\s+started|quick\s*start|prerequisites)\b/i.test(
+    /(?:#+\s*|\b)(install|installation|setup|getting\s+started|quick\s*start|prerequisites|building|build)\b/i.test(
       lower
     );
 
   // Usage section check
   const hasUsageSection =
-    /(?:#+\s*|\b)(usage|how\s+to\s+use|example|examples|running|demo)\b/i.test(lower);
+    /(?:#+\s*|\b)(usage|how\s+to\s+use|example|examples|running|demo|features|api)\b/i.test(lower);
 
   // Word count: split on whitespace
   const words = truncatedText.trim().split(/\s+/).filter((w) => w.length > 0);
