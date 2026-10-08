@@ -1,9 +1,12 @@
 "use client";
 
-import React from "react";
-import type { RoastCard, Evidence, Severity } from "@/types";
-import { ROAST_CATEGORIES } from "@/config/roasts";
-import { Flame, Sparkles, AlertTriangle, ShieldAlert, ExternalLink } from "lucide-react";
+import React, { useEffect, useReducer, useRef } from "react";
+import type { RoastCard, Evidence } from "@/types";
+import { Flame, Sparkles } from "lucide-react";
+import { ComicRoastPanel, PanelState } from "./ComicRoastPanel";
+import { RoastShowController } from "./RoastShowController";
+import { audioManager } from "@/lib/audio/audioManager";
+import { getReactionForRoast } from "@/lib/audio/reactions";
 
 interface RoastDeckProps {
   roasts: RoastCard[];
@@ -11,37 +14,194 @@ interface RoastDeckProps {
   onOpenEvidence: (roast: RoastCard) => void;
 }
 
-const SEVERITY_STYLES: Record<
-  Severity,
-  { label: string; badge: string; border: string; icon: React.ElementType }
-> = {
-  mild: {
-    label: "Mild Roast",
-    badge: "bg-emerald-500/10 text-emerald-500 border-emerald-500/30",
-    border: "border-emerald-500/20 hover:border-emerald-500/40",
-    icon: Sparkles,
-  },
-  medium: {
-    label: "Medium Heat",
-    badge: "bg-amber-500/10 text-amber-500 border-amber-500/30",
-    border: "border-amber-500/20 hover:border-amber-500/40",
-    icon: Flame,
-  },
-  sharp: {
-    label: "Sharp Burn",
-    badge: "bg-orange-500/10 text-orange-500 border-orange-500/30",
-    border: "border-orange-500/20 hover:border-orange-500/40",
-    icon: AlertTriangle,
-  },
-  savage: {
-    label: "Savage Roast",
-    badge: "bg-rose-500/10 text-rose-500 border-rose-500/30",
-    border: "border-rose-500/20 hover:border-rose-500/40",
-    icon: ShieldAlert,
-  },
+interface ShowState {
+  isPlaying: boolean;
+  isPaused: boolean;
+  currentIndex: number;
+  panelState: PanelState;
+}
+
+type ShowAction =
+  | { type: "START_SHOW" }
+  | { type: "PAUSE_SHOW" }
+  | { type: "RESUME_SHOW" }
+  | { type: "STOP_SHOW" }
+  | { type: "SET_PANEL_STATE"; state: PanelState }
+  | { type: "NEXT_PANEL"; totalPanels: number }
+  | { type: "PLAY_SINGLE_PANEL"; index: number };
+
+const INITIAL_SHOW_STATE: ShowState = {
+  isPlaying: false,
+  isPaused: false,
+  currentIndex: 0,
+  panelState: "IDLE",
 };
 
+function showReducer(state: ShowState, action: ShowAction): ShowState {
+  switch (action.type) {
+    case "START_SHOW":
+      return {
+        ...state,
+        isPlaying: true,
+        isPaused: false,
+        currentIndex: 0,
+        panelState: "ENTER",
+      };
+
+    case "PAUSE_SHOW":
+      return {
+        ...state,
+        isPaused: true,
+      };
+
+    case "RESUME_SHOW":
+      return {
+        ...state,
+        isPaused: false,
+      };
+
+    case "STOP_SHOW":
+      return {
+        ...state,
+        isPlaying: false,
+        isPaused: false,
+        panelState: "IDLE",
+      };
+
+    case "SET_PANEL_STATE":
+      return {
+        ...state,
+        panelState: action.state,
+      };
+
+    case "NEXT_PANEL": {
+      const nextIndex = state.currentIndex + 1;
+      if (nextIndex >= action.totalPanels) {
+        return {
+          ...state,
+          isPlaying: false,
+          panelState: "DONE",
+        };
+      }
+      return {
+        ...state,
+        currentIndex: nextIndex,
+        panelState: "ENTER",
+      };
+    }
+
+    case "PLAY_SINGLE_PANEL":
+      return {
+        ...state,
+        isPlaying: true,
+        isPaused: false,
+        currentIndex: action.index,
+        panelState: "ENTER",
+      };
+
+    default:
+      return state;
+  }
+}
+
 export const RoastDeck: React.FC<RoastDeckProps> = ({ roasts, onOpenEvidence }) => {
+  const [showState, dispatch] = useReducer(showReducer, INITIAL_SHOW_STATE);
+  const deckRef = useRef<HTMLDivElement>(null);
+
+  // Stop speech/audio on unmount or tab change
+  useEffect(() => {
+    return () => {
+      audioManager.stopAll();
+    };
+  }, []);
+
+  // Handle panel sequencing when state changes
+  useEffect(() => {
+    if (!showState.isPlaying || showState.isPaused || !roasts || roasts.length === 0) {
+      return;
+    }
+
+    const currentRoast = roasts[showState.currentIndex];
+    if (!currentRoast) {
+      dispatch({ type: "STOP_SHOW" });
+      return;
+    }
+
+    const reaction = getReactionForRoast(currentRoast.id, currentRoast.severity);
+
+    if (showState.panelState === "ENTER") {
+      // Whoosh in sound
+      audioManager.playSFX("whoosh");
+
+      // Scroll into view smoothly
+      const element = document.getElementById(`comic-panel-${currentRoast.id}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      // Transition to SPEAKING after enter
+      const enterTimer = setTimeout(() => {
+        dispatch({ type: "SET_PANEL_STATE", state: "SPEAKING" });
+      }, 400);
+
+      return () => clearTimeout(enterTimer);
+    }
+
+    if (showState.panelState === "SPEAKING") {
+      // Play bubble pop
+      audioManager.playSFX("pop");
+
+      // Speak roast line
+      audioManager.speak(currentRoast.text, {
+        onEnd: () => {
+          dispatch({ type: "SET_PANEL_STATE", state: "REACTING" });
+        },
+        onError: () => {
+          // Fallback advance on error
+          dispatch({ type: "SET_PANEL_STATE", state: "REACTING" });
+        },
+      });
+    }
+
+    if (showState.panelState === "REACTING") {
+      // Trigger deterministic SFX (rimshot, sizzle, laugh, etc.)
+      audioManager.playSFX(reaction.sfx);
+
+      // Advance to next panel after reaction duration
+      const reactionTimer = setTimeout(() => {
+        dispatch({ type: "NEXT_PANEL", totalPanels: roasts.length });
+      }, 1600);
+
+      return () => clearTimeout(reactionTimer);
+    }
+  }, [showState.isPlaying, showState.isPaused, showState.currentIndex, showState.panelState, roasts]);
+
+  // Keyboard shortcut handlers when deck has focus
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === " " || e.code === "Space") {
+      e.preventDefault();
+      if (!showState.isPlaying) {
+        audioManager.toggleSound(true);
+        dispatch({ type: "START_SHOW" });
+      } else if (showState.isPaused) {
+        dispatch({ type: "RESUME_SHOW" });
+      } else {
+        dispatch({ type: "PAUSE_SHOW" });
+        audioManager.stopSpeech();
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      audioManager.stopAll();
+      dispatch({ type: "STOP_SHOW" });
+    } else if (e.key === "ArrowRight") {
+      if (showState.isPlaying) {
+        e.preventDefault();
+        audioManager.stopSpeech();
+        dispatch({ type: "NEXT_PANEL", totalPanels: roasts.length });
+      }
+    }
+  };
+
   if (!roasts || roasts.length === 0) {
     return (
       <div className="text-center py-12 border border-dashed border-border rounded-2xl p-8">
@@ -55,79 +215,74 @@ export const RoastDeck: React.FC<RoastDeckProps> = ({ roasts, onOpenEvidence }) 
   }
 
   return (
-    <div className="w-full flex flex-col gap-6" role="region" aria-label="Roast Cards">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Flame className="w-6 h-6 text-orange-500" />
-            The Roast Deck
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Brutally honest code reviews backed by verifiable evidence extracted from your profile.
-          </p>
+    <div
+      ref={deckRef}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      className="w-full flex flex-col gap-6 focus:outline-none"
+      role="region"
+      aria-label="Comic Roast Show Deck"
+    >
+      {/* Header section with Roast Deck Title and Show Controls */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+              <Flame className="w-6 h-6 text-orange-500" />
+              Comic Roast Show
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+              Brutally honest code reviews delivered panel-by-panel with verifiable facts.
+            </p>
+          </div>
+          <span className="font-mono text-xs font-semibold px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-orange-400">
+            {roasts.length} {roasts.length === 1 ? "panel" : "panels"}
+          </span>
         </div>
-        <span className="font-mono text-xs font-semibold px-2.5 py-1 rounded-md bg-secondary text-muted-foreground">
-          {roasts.length} {roasts.length === 1 ? "card" : "cards"}
-        </span>
+
+        {/* Comic Roast Show Controller Bar */}
+        <RoastShowController
+          isPlaying={showState.isPlaying}
+          isPaused={showState.isPaused}
+          currentIndex={showState.currentIndex}
+          totalPanels={roasts.length}
+          onPlay={() => dispatch({ type: "START_SHOW" })}
+          onPause={() => {
+            dispatch({ type: "PAUSE_SHOW" });
+            audioManager.stopSpeech();
+          }}
+          onResume={() => dispatch({ type: "RESUME_SHOW" })}
+          onStop={() => {
+            audioManager.stopAll();
+            dispatch({ type: "STOP_SHOW" });
+          }}
+          onSkip={() => {
+            audioManager.stopSpeech();
+            dispatch({ type: "NEXT_PANEL", totalPanels: roasts.length });
+          }}
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {roasts.map((card) => {
-          const sev = SEVERITY_STYLES[card.severity] ?? SEVERITY_STYLES.medium;
-          const SevIcon = sev.icon;
-          const catMeta = ROAST_CATEGORIES[card.category];
-          const categoryTitle = catMeta?.name ?? card.category.replace(/_/g, " ");
-
+      {/* Comic Panels Grid: 2 columns on desktop, 1 column on mobile */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+        {roasts.map((card, idx) => {
+          const isActive = showState.isPlaying && showState.currentIndex === idx;
           return (
-            <div
+            <ComicRoastPanel
               key={card.id}
-              className={`bg-card/70 backdrop-blur-sm border rounded-xl p-5 flex flex-col justify-between gap-4 transition-all shadow-sm ${sev.border}`}
-            >
-              {/* Card Header */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${sev.badge}`}
-                  >
-                    <SevIcon className="w-3 h-3" />
-                    {sev.label}
-                  </span>
-                  <span className="text-xs font-medium text-muted-foreground font-mono">
-                    {categoryTitle}
-                  </span>
-                </div>
-
-                {card.source === "ai" && (
-                  <span className="text-[10px] font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded uppercase font-semibold">
-                    AI Enhanced
-                  </span>
-                )}
-              </div>
-
-              {/* Roast Body */}
-              <div>
-                <h3 className="font-semibold text-sm text-foreground mb-1">{card.title}</h3>
-                <blockquote className="text-foreground/90 font-medium text-base sm:text-lg leading-snug italic border-l-2 border-primary/40 pl-3.5 my-1">
-                  &ldquo;{card.text}&rdquo;
-                </blockquote>
-              </div>
-
-              {/* Card Footer */}
-              <div className="pt-2 border-t border-border/40 flex items-center justify-between gap-2">
-                <span className="text-[11px] font-mono text-muted-foreground">
-                  Rule: {card.category}
-                </span>
-
-                <button
-                  onClick={() => onOpenEvidence(card)}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors py-1 px-2 rounded-lg hover:bg-primary/10"
-                  aria-label={`View evidence for ${categoryTitle}`}
-                >
-                  Why am I roasted?
-                  <ExternalLink className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
+              card={card}
+              index={idx}
+              isActive={isActive}
+              panelState={isActive ? showState.panelState : "IDLE"}
+              onOpenEvidence={onOpenEvidence}
+              onReplaySingle={() => {
+                audioManager.toggleSound(true);
+                dispatch({ type: "PLAY_SINGLE_PANEL", index: idx });
+              }}
+              onStateTransition={(nextState) => {
+                dispatch({ type: "SET_PANEL_STATE", state: nextState });
+              }}
+            />
           );
         })}
       </div>

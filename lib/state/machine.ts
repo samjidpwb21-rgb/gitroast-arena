@@ -9,7 +9,17 @@ export type AnalysisStage =
   | "ready"
   | "error";
 
-export type MascotPose = "IDLE" | "SEARCHING" | "SURPRISED" | "LAUGH" | "SHRUG";
+export type MascotPose =
+  | "IDLE"
+  | "SEARCHING"
+  | "SURPRISED"
+  | "LAUGH"
+  | "SHRUG"
+  | "SMIRK"
+  | "LAUGH_SARCASTIC"
+  | "LAUGH_HARD"
+  | "TALKING"
+  | "SMUG_POSE";
 
 export interface AnalysisState {
   stage: AnalysisStage;
