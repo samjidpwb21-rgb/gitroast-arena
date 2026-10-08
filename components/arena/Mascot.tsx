@@ -32,7 +32,7 @@ export function Mascot({
           lg: { width: 260, height: 260 },
         }[size];
 
-  // Head and body animation variants per pose
+  // Head and body animation variants per pose with lively comedian gestures
   const headVariants = {
     IDLE: {
       y: [0, -3, 0],
@@ -49,52 +49,53 @@ export function Mascot({
         : { duration: 2, repeat: Infinity, ease: "easeInOut" as const },
     },
     SURPRISED: {
-      scale: [1, 1.08, 1],
-      y: -6,
+      scale: [1, 1.12, 1],
+      y: -8,
       transition: shouldReduceMotion
         ? undefined
         : { duration: 0.35, ease: "easeOut" as const },
     },
     LAUGH: {
       y: [0, -6, 0, -4, 0],
-      rotate: [0, -2, 2, -1, 0],
+      rotate: [0, -3, 3, -1, 0],
       transition: shouldReduceMotion
         ? undefined
-        : { duration: 1.1, repeat: Infinity, ease: "easeInOut" as const },
+        : { duration: 0.9, repeat: Infinity, ease: "easeInOut" as const },
     },
     SHRUG: {
-      rotate: 3,
+      rotate: 4,
       y: 2,
       transition: { duration: 0.3 },
     },
     SMIRK: {
-      rotate: [0, 3, 2],
-      y: [0, -2, 0],
+      rotate: [0, 4, 3],
+      y: [0, -3, 0],
       transition: shouldReduceMotion ? undefined : { duration: 0.6, ease: "easeOut" as const },
     },
     LAUGH_SARCASTIC: {
-      rotate: [-2, 3, -2, 3, 0],
-      y: [0, -4, 0, -3, 0],
+      rotate: [-3, 5, -2, 4, 0],
+      y: [0, -6, 1, -4, 0],
       transition: shouldReduceMotion
         ? undefined
-        : { duration: 0.8, repeat: 2, ease: "easeInOut" as const },
+        : { duration: 0.75, repeat: 3, ease: "easeInOut" as const },
     },
     LAUGH_HARD: {
-      rotate: [0, -6, 6, -4, 4, 0],
-      y: [0, -10, 2, -8, 0],
-      scale: [1, 1.05, 0.98, 1.03, 1],
+      rotate: [0, -8, 8, -6, 6, 0],
+      y: [0, -12, 3, -10, 0],
+      scale: [1, 1.08, 0.96, 1.06, 1],
       transition: shouldReduceMotion
         ? undefined
-        : { duration: 1.0, repeat: 2, ease: "easeInOut" as const },
+        : { duration: 0.9, repeat: 3, ease: "easeInOut" as const },
     },
     TALKING: {
-      y: [0, -2, 0, -2, 0],
+      rotate: [-2, 3, -1, 2, 0],
+      y: [0, -3, 1, -2, 0],
       transition: shouldReduceMotion
         ? undefined
-        : { duration: 0.5, repeat: Infinity, ease: "easeInOut" as const },
+        : { duration: 1.0, repeat: Infinity, ease: "easeInOut" as const },
     },
     SMUG_POSE: {
-      rotate: 2,
+      rotate: 3,
       y: -1,
       transition: { duration: 0.4 },
     },
@@ -104,6 +105,7 @@ export function Mascot({
   const isLaughing =
     pose === "LAUGH" || pose === "LAUGH_SARCASTIC" || pose === "LAUGH_HARD";
   const isLaughHard = pose === "LAUGH_HARD";
+  const isSarcasticLaugh = pose === "LAUGH_SARCASTIC";
   const isShrugging = pose === "SHRUG";
   const isSearching = pose === "SEARCHING";
   const isSmirk = pose === "SMIRK";
@@ -186,18 +188,70 @@ export function Mascot({
             fill="#F8FAFC"
           />
 
-          {/* Arms Layer (Crossed for SMUG_POSE or Out for SHRUG) */}
+          {/* Arms Layer & Comedian Gestures */}
           <g id="mascot-arms">
-            {isSmug && (
-              <g>
+            {/* Emphatic Talking Gesture Arm */}
+            {isTalking && (
+              <motion.g
+                id="mascot-talking-arm"
+                animate={shouldReduceMotion ? undefined : { rotate: [-6, 10, -4, 8, -6], y: [0, -3, 1, -2, 0] }}
+                transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+                style={{ originX: "135px", originY: "165px" }}
+              >
                 <path
-                  d="M50 162 C70 178, 130 178, 150 162 C140 182, 60 182, 50 162 Z"
+                  d="M120 165 C138 152, 160 140, 170 134 C175 130, 180 135, 175 142 C165 154, 142 172, 126 174 Z"
                   fill="#18181B"
                   stroke="#F97316"
                   strokeWidth="2.5"
                 />
-                <circle cx="75" cy="170" r="5" fill="#27272A" stroke="#F97316" strokeWidth="1" />
-                <circle cx="125" cy="170" r="5" fill="#27272A" stroke="#F97316" strokeWidth="1" />
+                <circle cx="172" cy="135" r="4.5" fill="#F97316" />
+                <path d="M172 135 L178 131" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" />
+              </motion.g>
+            )}
+
+            {/* Sarcastic Chuckle Covering Mouth Arm */}
+            {isSarcasticLaugh && (
+              <motion.g
+                id="mascot-chuckle-arm"
+                animate={shouldReduceMotion ? undefined : { y: [0, -4, 0, -3, 0], rotate: [0, -3, 3, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+                style={{ originX: "120px", originY: "140px" }}
+              >
+                <path
+                  d="M108 146 C118 132, 128 126, 134 135 C130 144, 118 154, 108 150 Z"
+                  fill="#18181B"
+                  stroke="#F97316"
+                  strokeWidth="2"
+                />
+                <circle cx="130" cy="132" r="3.5" fill="#F97316" />
+              </motion.g>
+            )}
+
+            {/* Hard Laugh Belly Clutch */}
+            {isLaughHard && (
+              <motion.g
+                id="mascot-belly-laugh"
+                animate={shouldReduceMotion ? undefined : { scale: [1, 1.06, 0.96, 1.04, 1] }}
+                transition={{ duration: 0.6, repeat: Infinity }}
+              >
+                <path d="M45 165 C60 178, 85 180, 100 178" stroke="#F97316" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                <path d="M155 165 C140 178, 115 180, 100 178" stroke="#F97316" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                <circle cx="75" cy="174" r="4" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
+                <circle cx="125" cy="174" r="4" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
+              </motion.g>
+            )}
+
+            {/* Crossed Arms for SMUG_POSE and SMIRK */}
+            {(isSmug || isSmirk) && (
+              <g id="mascot-crossed-arms">
+                <path
+                  d="M48 162 C70 178, 130 178, 152 162 C140 182, 60 182, 48 162 Z"
+                  fill="#18181B"
+                  stroke="#F97316"
+                  strokeWidth="2.5"
+                />
+                <circle cx="75" cy="170" r="5" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
+                <circle cx="125" cy="170" r="5" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
               </g>
             )}
 
@@ -314,7 +368,7 @@ export function Mascot({
             <ellipse cx="97" cy="103" rx="2" ry="1" fill="#FFFFFF" opacity="0.7" />
           </g>
 
-          {/* EYES */}
+          {/* EYES with Sarcastic Comedic Inflections */}
           <g id="mascot-eyes">
             {/* Left Eye */}
             <g id="mascot-left-eye">
@@ -397,13 +451,13 @@ export function Mascot({
             </g>
           </g>
 
-          {/* EYEBROWS */}
+          {/* EYEBROWS (Cocked Eyebrow for Sarcasm) */}
           <g id="mascot-eyebrows">
-            {/* Left Eyebrow (Raised high for SMIRK) */}
+            {/* Left Eyebrow (Cocked high for SMIRK and TALKING) */}
             <path
               d={
-                isSmirk
-                  ? "M62 60 Q76 50 90 62"
+                isSmirk || isTalking
+                  ? "M62 58 Q76 48 90 60"
                   : isSurprised
                   ? "M62 66 Q74 54 88 66"
                   : isLaughing
@@ -422,7 +476,7 @@ export function Mascot({
                   ? "M138 66 Q126 54 112 66"
                   : isLaughing
                   ? "M138 70 Q124 60 110 70"
-                  : isSmirk
+                  : isSmirk || isTalking
                   ? "M138 69 Q122 65 110 73"
                   : "M138 68 Q122 62 110 72"
               }
@@ -438,12 +492,12 @@ export function Mascot({
             {isTalking ? (
               // Talking Animated Mouth Loop
               <motion.path
-                d="M88 118 Q100 134 112 118 Z"
+                d="M86 118 Q100 136 114 118 Z"
                 fill="#991B1B"
                 stroke="#09090B"
-                strokeWidth="3"
-                animate={{ scaleY: [0.6, 1.2, 0.6] }}
-                transition={{ duration: 0.25, repeat: Infinity }}
+                strokeWidth="3.5"
+                animate={shouldReduceMotion ? undefined : { scaleY: [0.5, 1.3, 0.5] }}
+                transition={{ duration: 0.22, repeat: Infinity }}
                 style={{ originX: "100px", originY: "118px" }}
               />
             ) : isLaughHard ? (
@@ -480,7 +534,7 @@ export function Mascot({
                 fill="none"
               />
             ) : (
-              // Default / Smirk / Smug Mouth
+              // Default / Smirk / Smug Mouth with Fang
               <g>
                 <path
                   d="M86 118 Q100 126 115 116"
@@ -502,7 +556,7 @@ export function Mascot({
               fill="#38BDF8"
               stroke="#0284C7"
               strokeWidth="1.5"
-              animate={{ y: [0, 4, 0] }}
+              animate={shouldReduceMotion ? undefined : { y: [0, 4, 0] }}
               transition={{ duration: 0.4, repeat: Infinity }}
             />
           )}

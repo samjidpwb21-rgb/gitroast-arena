@@ -118,33 +118,9 @@ class AudioManager {
       if (name === "click") return this.synth.playClick(volume);
       if (name === "stinger") return this.synth.playStinger(volume);
       if (name === "rimshot") return this.synth.playRimshot(volume);
-    }
-
-    // Audio file playback with silent degradation
-    const fileMap: Record<string, string> = {
-      smirk: "/sfx/smirk-01.mp3",
-      laugh_sarcastic: "/sfx/laugh-sarcastic-01.mp3",
-      laugh_hard: "/sfx/laugh-evil-01.mp3",
-    };
-
-    const filePath = fileMap[name];
-    if (filePath && typeof window !== "undefined") {
-      try {
-        let audio = this.audioElements.get(filePath);
-        if (!audio) {
-          audio = new Audio(filePath);
-          this.audioElements.set(filePath, audio);
-        }
-        audio.volume = Math.min(1, Math.max(0, volume * 0.8));
-        audio.currentTime = 0;
-        await audio.play().catch(() => {
-          // If file not found, fall back to procedural synthesis
-          if (name === "smirk") this.synth?.playStinger(volume);
-          else if (name === "laugh_sarcastic" || name === "laugh_hard") this.synth?.playSizzle(volume);
-        });
-      } catch {
-        // Silent degrade
-      }
+      if (name === "smirk") return this.synth.playSmugSnicker(volume);
+      if (name === "laugh_sarcastic") return this.synth.playSarcasticChuckle(volume);
+      if (name === "laugh_hard") return this.synth.playMockingCackle(volume);
     }
   }
 

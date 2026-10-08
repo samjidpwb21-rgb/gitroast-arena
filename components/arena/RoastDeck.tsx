@@ -6,7 +6,7 @@ import { Flame, Sparkles } from "lucide-react";
 import { ComicRoastPanel, PanelState } from "./ComicRoastPanel";
 import { RoastShowController } from "./RoastShowController";
 import { audioManager } from "@/lib/audio/audioManager";
-import { getReactionForRoast } from "@/lib/audio/reactions";
+import { getReactionForRoast, getSpokenDelivery } from "@/lib/audio/reactions";
 
 interface RoastDeckProps {
   roasts: RoastCard[];
@@ -151,8 +151,9 @@ export const RoastDeck: React.FC<RoastDeckProps> = ({ roasts, onOpenEvidence }) 
       // Play bubble pop
       audioManager.playSFX("pop");
 
-      // Speak roast line
-      audioManager.speak(currentRoast.text, {
+      // Speak modulated sarcastic roast line
+      const spokenScript = getSpokenDelivery(currentRoast);
+      audioManager.speak(spokenScript, {
         onEnd: () => {
           dispatch({ type: "SET_PANEL_STATE", state: "REACTING" });
         },

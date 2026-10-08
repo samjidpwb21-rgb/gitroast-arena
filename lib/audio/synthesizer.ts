@@ -255,6 +255,116 @@ export class WebAudioSynthesizer {
     }
   }
 
+  /**
+   * Sarcastic Chuckle (staccato 'heh-heh-heh' vocal pulse)
+   */
+  public playSarcasticChuckle(volume: number = 0.5): void {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      const bursts = [0, 0.14, 0.28];
+      const baseFreqs = [320, 290, 260];
+
+      bursts.forEach((startTime, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = "sawtooth";
+        const freq = baseFreqs[idx] ?? 280;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.75, ctx.currentTime + startTime + 0.09);
+
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(750, ctx.currentTime + startTime);
+        filter.Q.setValueAtTime(4.0, ctx.currentTime + startTime);
+
+        gain.gain.setValueAtTime(0, ctx.currentTime + startTime);
+        gain.gain.linearRampToValueAtTime(volume * 0.4, ctx.currentTime + startTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + 0.1);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime + startTime);
+        osc.stop(ctx.currentTime + startTime + 0.11);
+      });
+    } catch {
+      // Ignore
+    }
+  }
+
+  /**
+   * Mocking Cackle (dramatic laughing bursts with pitch vibrato)
+   */
+  public playMockingCackle(volume: number = 0.5): void {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      const bursts = [0, 0.12, 0.22, 0.34, 0.46];
+      const freqs = [380, 420, 360, 320, 260];
+
+      bursts.forEach((timeOffset, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = "triangle";
+        const f = freqs[idx] ?? 300;
+        osc.frequency.setValueAtTime(f, ctx.currentTime + timeOffset);
+        osc.frequency.exponentialRampToValueAtTime(f * 0.8, ctx.currentTime + timeOffset + 0.09);
+
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(900, ctx.currentTime + timeOffset);
+        filter.Q.setValueAtTime(3.5, ctx.currentTime + timeOffset);
+
+        gain.gain.setValueAtTime(0, ctx.currentTime + timeOffset);
+        gain.gain.linearRampToValueAtTime(volume * 0.45, ctx.currentTime + timeOffset + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + timeOffset + 0.1);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime + timeOffset);
+        osc.stop(ctx.currentTime + timeOffset + 0.11);
+      });
+    } catch {
+      // Ignore
+    }
+  }
+
+  /**
+   * Smug Snicker (short ascending smirking stinger)
+   */
+  public playSmugSnicker(volume: number = 0.5): void {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(300, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(560, ctx.currentTime + 0.15);
+
+      gain.gain.setValueAtTime(volume * 0.35, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.17);
+    } catch {
+      // Ignore
+    }
+  }
+
   public close(): void {
     if (this.ctx && this.ctx.state !== "closed") {
       this.ctx.close().catch(() => {});
