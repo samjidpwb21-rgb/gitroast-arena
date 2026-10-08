@@ -58,6 +58,12 @@ export async function fetchGitHubSnapshot(
  * Handles the actual network call to GitHub GraphQL endpoint with timeout and rate limit checks.
  */
 async function executeUpstreamQuery(username: string, clock: Date): Promise<GitHubSnapshot> {
+  if (!env.GITHUB_TOKEN || env.GITHUB_TOKEN === "ghp_build_time_placeholder_token") {
+    throw new Error(
+      "GitHub token is not configured on the server. Please add GITHUB_TOKEN in your Vercel Environment Variables and redeploy."
+    );
+  }
+
   const octokit = new Octokit({
     auth: env.GITHUB_TOKEN,
   });

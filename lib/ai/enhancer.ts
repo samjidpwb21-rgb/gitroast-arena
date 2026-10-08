@@ -36,7 +36,10 @@ interface EnhancementResult {
  * Returns the original deterministic templates if AI is not configured or fails.
  */
 export async function enhanceAnalysisWithAI(options: EnhanceOptions): Promise<EnhancementResult> {
-  const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey =
+    process.env.AI_API_KEY ||
+    process.env.GEMINI_API_KEY ||
+    process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
     // Graceful deterministic mode

@@ -30,15 +30,17 @@ function validateEnv(): ServerEnv {
     ...process.env,
     GITHUB_TOKEN:
       process.env.GITHUB_TOKEN ||
-      (isBuildOrTest ? "ghp_build_time_placeholder_token" : undefined),
+      (isBuildOrTest ? "ghp_build_time_placeholder_token" : ""),
   };
 
   const parsed = serverEnvSchema.safeParse(rawEnv);
   if (!parsed.success) {
-    const formatted = parsed.error.issues
-      .map((issue) => `  - ${issue.path.join(".")}: ${issue.message}`)
-      .join("\n");
-    throw new Error(`Environment validation failed:\n${formatted}`);
+    return {
+      GITHUB_TOKEN: process.env.GITHUB_TOKEN || "",
+      AI_MODEL: process.env.AI_MODEL || "gemini-1.5-flash",
+      CACHE_TTL_SECONDS: 600,
+      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    };
   }
   return parsed.data;
 }
