@@ -137,7 +137,7 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.25 }}
-          className="relative z-10 rounded-3xl bg-card/85 backdrop-blur-xl border border-border/80 shadow-2xl overflow-hidden group hover:border-orange-500/40 transition-colors"
+          className="relative z-10 rounded-3xl bg-card border border-border/80 shadow-2xl overflow-hidden group hover:border-orange-500/40 transition-colors"
         >
           {/* Interactive cursor spotlight overlay */}
           <motion.div
