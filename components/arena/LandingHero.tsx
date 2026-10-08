@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { Flame, ShieldAlert, Zap, Skull, ArrowRight, User, Briefcase, Sparkles } from "lucide-react";
 import type { RoastLevel } from "@/types";
 import { validateUsername } from "@/lib/validation/username";
-import { PeekingMascot } from "./PeekingMascot";
+import { PeekingMascot, PeekingPaws } from "./PeekingMascot";
+import { DialogueTrigger } from "@/lib/mascot/dialogue";
 
 interface LandingHeroProps {
   onSubmit: (username: string, roastLevel: RoastLevel, targetRole: string) => void;
@@ -60,12 +61,36 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
   const [targetRole, setTargetRole] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
 
+  // Mascot interaction state
+  const [mascotTrigger, setMascotTrigger] = useState<DialogueTrigger>("idle");
+  const [isTyping, setIsTyping] = useState(false);
+  const [isHoveringSubmit, setIsHoveringSubmit] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+
   // Dynamic cursor spotlight tracking
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // Detect returning user from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const hasSaved = Object.keys(window.localStorage).some((k) =>
+          k.startsWith("gitroast:")
+        );
+        if (hasSaved) {
+          setMascotTrigger("returningUser");
+        }
+      } catch {
+        // ignore storage errors
+      }
+    }
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    setCursorPos({ x: e.clientX, y: e.clientY });
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     mouseX.set(e.clientX - rect.left);
@@ -78,20 +103,40 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
     transparent 80%
   )`;
 
+  // Username validation state
+  const validationResult = useMemo(() => {
+    if (!rawUsername.trim()) return null;
+    return validateUsername(rawUsername);
+  }, [rawUsername]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const check = validateUsername(rawUsername);
     if (!check.valid) {
       setLocalError(check.error || "Invalid username");
+      setMascotTrigger("usernameInvalid");
       return;
     }
     setLocalError(null);
+    setIsSubmitting(true);
+    setMascotTrigger("submit");
     onSubmit(check.normalized, roastLevel, targetRole.trim());
   };
 
+  const handleRoastLevelPick = (level: RoastLevel) => {
+    setRoastLevel(level);
+    const triggerMap: Record<RoastLevel, DialogueTrigger> = {
+      easy: "pickEasy",
+      spicy: "pickSpicy",
+      savage: "pickSavage",
+      brutal: "pickBrutal",
+    };
+    setMascotTrigger(triggerMap[level]);
+  };
+
   return (
-    <div className="w-full max-w-xl mx-auto space-y-8 relative">
-      {/* Ambient floating flame embers behind header */}
+    <div className="w-full max-w-xl mx-auto space-y-6 sm:space-y-8 relative">
+      {/* Ambient floating flame glow behind header */}
       <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-72 h-72 bg-orange-500/15 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" />
 
       {/* Header section */}
@@ -126,9 +171,20 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
       </div>
 
       {/* Main Form Container with Peeking Mascot Wrapper */}
-      <div className="relative pt-6 sm:pt-8 pb-4">
-        {/* The Random Peeking Mascot popping out behind the form */}
-        <PeekingMascot />
+      <div className="relative pt-24 sm:pt-28 pb-4">
+        {/* The Peeking Mascot popping out behind top edge of the card */}
+        <PeekingMascot
+          trigger={mascotTrigger}
+          isTyping={isTyping}
+          isValid={validationResult ? validationResult.valid : undefined}
+          isHoveringSubmit={isHoveringSubmit}
+          isSubmitting={isSubmitting || isLoading}
+          hasError={Boolean(localError)}
+          cursorPos={cursorPos}
+        />
+
+        {/* Paws Gripping Edge in Front of Card */}
+        <PeekingPaws />
 
         {/* Form Card with dynamic mouse spotlight */}
         <motion.div
@@ -160,8 +216,14 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
                   id="github-username"
                   type="text"
                   value={rawUsername}
+                  onFocus={() => {
+                    setMascotTrigger("focusUsername");
+                    setIsTyping(false);
+                  }}
+                  onBlur={() => setIsTyping(false)}
                   onChange={(e) => {
                     setRawUsername(e.target.value);
+                    setIsTyping(true);
                     if (localError) setLocalError(null);
                   }}
                   placeholder="e.g. torvalds, octocat"
@@ -203,7 +265,16 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
                 id="target-role"
                 type="text"
                 value={targetRole}
-                onChange={(e) => setTargetRole(e.target.value)}
+                onFocus={() => setMascotTrigger("focusRole")}
+                onBlur={() => {
+                  if (targetRole.trim()) setMascotTrigger("roleFilled");
+                }}
+                onChange={(e) => {
+                  setTargetRole(e.target.value);
+                  if (e.target.value.trim().length > 2) {
+                    setMascotTrigger("roleFilled");
+                  }
+                }}
                 placeholder="e.g. Senior Frontend Engineer, AI Dev"
                 disabled={isLoading}
                 maxLength={60}
@@ -226,7 +297,7 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
                       type="button"
                       whileHover={{ scale: 1.03, y: -2 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => setRoastLevel(level.id)}
+                      onClick={() => handleRoastLevelPick(level.id)}
                       disabled={isLoading}
                       className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer ${
                         isSelected
@@ -253,11 +324,18 @@ export function LandingHero({ onSubmit, isLoading }: LandingHeroProps) {
               </div>
             </div>
 
-            {/* Submit Button with interactive pulse & glow */}
+            {/* Submit Button with interactive hover & focus reaction */}
             <motion.button
               type="submit"
               whileHover={{ scale: 1.015 }}
               whileTap={{ scale: 0.985 }}
+              onMouseEnter={() => setIsHoveringSubmit(true)}
+              onMouseLeave={() => setIsHoveringSubmit(false)}
+              onFocus={() => {
+                setIsHoveringSubmit(true);
+                setMascotTrigger("hoverEnter");
+              }}
+              onBlur={() => setIsHoveringSubmit(false)}
               disabled={isLoading || !rawUsername.trim()}
               className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white font-black text-base shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer group/btn overflow-hidden relative"
             >
