@@ -200,7 +200,7 @@ export const PeekingMascot: React.FC = () => {
               </motion.div>
             )}
 
-            {/* Sharp & Badass Peeking Arena Hyena Mascot (Bigger Size: 200x180) */}
+            {/* Cyberpunk Developer Fox Peeking Illustration */}
             <div className="relative w-48 h-44 flex items-center justify-center filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)] hover:scale-105 transition-transform">
               <svg
                 viewBox="0 0 200 180"
@@ -209,183 +209,172 @@ export const PeekingMascot: React.FC = () => {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <defs>
-                  {/* Fire Gradient */}
-                  <linearGradient id="fireGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  {/* Fox Orange Gradient */}
+                  <linearGradient id="peekFoxOrange" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stopColor="#F97316" />
-                    <stop offset="50%" stopColor="#EA580C" />
+                    <stop offset="60%" stopColor="#EA580C" />
                     <stop offset="100%" stopColor="#C2410C" />
                   </linearGradient>
 
-                  {/* Fur Base Gradient */}
-                  <linearGradient id="furGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#F59E0B" />
-                    <stop offset="100%" stopColor="#D97706" />
-                  </linearGradient>
-
-                  {/* Dark Mane Gradient */}
-                  <linearGradient id="maneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#78350F" />
-                    <stop offset="100%" stopColor="#451A03" />
-                  </linearGradient>
-
-                  {/* Eye Glow Filter */}
-                  <filter id="eyeGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
+                  {/* Ambient Glow */}
+                  <radialGradient id="peekFoxAura" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#F97316" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
+                  </radialGradient>
                 </defs>
 
-                {/* Back Glowing Aura */}
-                <ellipse cx="100" cy="90" rx="65" ry="55" fill="#F97316" opacity="0.25" filter="url(#eyeGlow)" />
+                {/* Glowing Back Aura */}
+                <circle cx="100" cy="90" r="75" fill="url(#peekFoxAura)" />
 
-                {/* Left Ear - Sharp & Angular */}
-                <path
-                  d="M35 85 C20 50, 30 15, 60 25 C75 30, 75 60, 65 85 Z"
-                  fill="url(#maneGrad)"
-                  stroke="#291205"
-                  strokeWidth="4"
-                />
-                <path
-                  d="M40 75 C30 50, 38 28, 58 35 C68 40, 68 60, 60 75 Z"
-                  fill="#FDE68A"
-                />
+                {/* ======================================================== */}
+                {/* EARS */}
+                {/* ======================================================== */}
+                {/* Left Ear */}
+                <g id="peek-left-ear">
+                  <path
+                    d="M32 90 C20 45, 36 10, 68 24 C78 28, 76 65, 68 90 Z"
+                    fill="url(#peekFoxOrange)"
+                    stroke="#09090B"
+                    strokeWidth="3.5"
+                  />
+                  <path d="M42 35 C40 22, 50 12, 68 24 C64 32, 54 36, 42 35 Z" fill="#18181B" />
+                  <path
+                    d="M42 80 C36 55, 46 38, 62 42 C68 46, 66 65, 58 80 Z"
+                    fill="#F8FAFC"
+                  />
+                  <path d="M46 70 L55 64 L50 76 L62 70" stroke="#E2E8F0" strokeWidth="2" strokeLinecap="round" />
+                </g>
 
-                {/* Right Ear - Sharp & Angular */}
-                <path
-                  d="M165 85 C180 50, 170 15, 140 25 C125 30, 125 60, 135 85 Z"
-                  fill="url(#maneGrad)"
-                  stroke="#291205"
-                  strokeWidth="4"
-                />
-                <path
-                  d="M160 75 C170 50, 162 28, 142 35 C132 40, 132 60, 140 75 Z"
-                  fill="#FDE68A"
-                />
+                {/* Right Ear */}
+                <g id="peek-right-ear">
+                  <path
+                    d="M168 90 C180 45, 164 10, 132 24 C122 28, 124 65, 132 90 Z"
+                    fill="url(#peekFoxOrange)"
+                    stroke="#09090B"
+                    strokeWidth="3.5"
+                  />
+                  <path d="M158 35 C160 22, 150 12, 132 24 C136 32, 146 36, 158 35 Z" fill="#18181B" />
+                  <path
+                    d="M158 80 C164 55, 154 38, 138 42 C132 46, 134 65, 142 80 Z"
+                    fill="#F8FAFC"
+                  />
+                  <path d="M154 70 L145 64 L150 76 L138 70" stroke="#E2E8F0" strokeWidth="2" strokeLinecap="round" />
+                </g>
 
-                {/* Spiky Mohawk & Mane Crest */}
+                {/* Spiky Anime Hair Tufts */}
                 <path
-                  d="M70 38 L85 8 L100 28 L115 5 L130 35 L120 48 Z"
-                  fill="url(#fireGrad)"
-                  stroke="#7C2D12"
+                  d="M68 45 L82 18 L96 35 L108 12 L120 32 L132 20 L135 48 Z"
+                  fill="url(#peekFoxOrange)"
+                  stroke="#09090B"
                   strokeWidth="3.5"
                 />
+                <path d="M86 28 L98 16 L106 28 L114 18 L122 34" stroke="#FDBA74" strokeWidth="2.5" strokeLinecap="round" />
+
+                {/* Head Base */}
                 <path
-                  d="M80 32 L95 16 L105 30 L115 14 L120 36 Z"
-                  fill="#FDE047"
-                  opacity="0.8"
-                />
-
-                {/* Head Base - Sleek Aggressive Jawline */}
-                <path
-                  d="M45 80 C40 45, 160 45, 155 80 C162 120, 145 150, 100 155 C55 150, 38 120, 45 80 Z"
-                  fill="url(#furGrad)"
-                  stroke="#291205"
-                  strokeWidth="4.5"
-                />
-
-                {/* Cheek Fur Spikes */}
-                <path d="M40 85 L18 95 L36 105 L22 115 L44 120 Z" fill="#D97706" stroke="#78350F" strokeWidth="2.5" />
-                <path d="M160 85 L182 95 L164 105 L178 115 L156 120 Z" fill="#D97706" stroke="#78350F" strokeWidth="2.5" />
-
-                {/* Snout Area */}
-                <ellipse cx="100" cy="118" rx="28" ry="20" fill="#FEF08A" stroke="#291205" strokeWidth="3.5" />
-
-                {/* Sharp Black Nose */}
-                <path
-                  d="M88 108 C92 104, 108 104, 112 108 C116 114, 107 122, 100 123 C93 122, 84 114, 88 108 Z"
-                  fill="#18181B"
+                  d="M48 85 C42 55, 158 55, 152 85 C162 108, 148 135, 100 142 C52 135, 38 108, 48 85 Z"
+                  fill="url(#peekFoxOrange)"
                   stroke="#09090B"
-                  strokeWidth="2"
+                  strokeWidth="4"
                 />
-                <ellipse cx="95" cy="110" rx="3" ry="1.5" fill="#FFFFFF" opacity="0.6" />
 
-                {/* Sly Smirk / Grin with Fangs */}
+                {/* Fluffy White Cheeks */}
+                <path
+                  d="M45 88 C30 92, 18 105, 30 115 C42 125, 65 125, 78 130 C65 118, 52 102, 45 88 Z"
+                  fill="#F8FAFC"
+                  stroke="#09090B"
+                  strokeWidth="2.5"
+                />
+                <path
+                  d="M155 88 C170 92, 182 105, 170 115 C158 125, 135 125, 122 130 C135 118, 148 102, 155 88 Z"
+                  fill="#F8FAFC"
+                  stroke="#09090B"
+                  strokeWidth="2.5"
+                />
+
+                {/* White Snout Base */}
+                <path
+                  d="M74 102 C74 92, 126 92, 126 102 C126 128, 100 138, 100 138 C100 138, 74 128, 74 102 Z"
+                  fill="#F8FAFC"
+                  stroke="#09090B"
+                  strokeWidth="3"
+                />
+
+                {/* Sleek Black Fox Nose */}
+                <path
+                  d="M92 102 C94 98, 106 98, 108 102 C110 108, 104 112, 100 113 C96 112, 90 108, 92 102 Z"
+                  fill="#09090B"
+                />
+                <ellipse cx="97" cy="103" rx="2" ry="1" fill="#FFFFFF" opacity="0.7" />
+
+                {/* Eyes - Sharp, Confident, Analytical Fox Eyes */}
+                {/* Left Eye */}
+                <g>
+                  {isSpotted ? (
+                    <g>
+                      <ellipse cx="78" cy="80" rx="11" ry="13" fill="#FFFFFF" stroke="#09090B" strokeWidth="3" />
+                      <circle cx="78" cy="80" r="7" fill="#F97316" />
+                      <circle cx="78" cy="80" r="4.5" fill="#09090B" />
+                      <circle cx="75" cy="77" r="2.5" fill="#FFFFFF" />
+                    </g>
+                  ) : (
+                    <g>
+                      <path d="M62 82 C65 68, 88 72, 92 84 C88 90, 68 90, 62 82 Z" fill="#09090B" />
+                      <path d="M65 82 C68 72, 86 74, 89 83 C86 88, 70 88, 65 82 Z" fill="#FFFFFF" />
+                      <ellipse cx="78" cy="81" rx="6.5" ry="7" fill="#F97316" />
+                      <ellipse cx="79" cy="81" rx="3.5" ry="5.5" fill="#09090B" />
+                      <circle cx="77" cy="78" r="2" fill="#FFFFFF" />
+                    </g>
+                  )}
+                </g>
+
+                {/* Right Eye */}
+                <g>
+                  {isSpotted ? (
+                    <g>
+                      <ellipse cx="122" cy="80" rx="11" ry="13" fill="#FFFFFF" stroke="#09090B" strokeWidth="3" />
+                      <circle cx="122" cy="80" r="7" fill="#F97316" />
+                      <circle cx="122" cy="80" r="4.5" fill="#09090B" />
+                      <circle cx="125" cy="77" r="2.5" fill="#FFFFFF" />
+                    </g>
+                  ) : (
+                    <g>
+                      <path d="M138 82 C135 68, 112 72, 108 84 C112 90, 132 90, 138 82 Z" fill="#09090B" />
+                      <path d="M135 82 C132 72, 114 74, 111 83 C114 88, 130 88, 135 82 Z" fill="#FFFFFF" />
+                      <ellipse cx="122" cy="81" rx="6.5" ry="7" fill="#F97316" />
+                      <ellipse cx="121" cy="81" rx="3.5" ry="5.5" fill="#09090B" />
+                      <circle cx="123" cy="78" r="2" fill="#FFFFFF" />
+                    </g>
+                  )}
+                </g>
+
+                {/* Eyebrows */}
                 {isSpotted ? (
-                  /* Surprised / Wide Open Mouth */
-                  <g>
-                    <ellipse cx="100" cy="130" rx="12" ry="9" fill="#7F1D1D" stroke="#291205" strokeWidth="3" />
-                    <path d="M92 122 L95 127 L98 122 Z" fill="#FFFFFF" />
-                    <path d="M102 122 L105 127 L108 122 Z" fill="#FFFFFF" />
-                  </g>
+                  <>
+                    <path d="M62 66 Q74 54 88 66" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
+                    <path d="M138 66 Q126 54 112 66" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
+                  </>
                 ) : (
-                  /* Badass Smirk with Little Sharp Fang */
+                  <>
+                    <path d="M62 68 Q78 62 90 72" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
+                    <path d="M138 68 Q122 62 110 72" stroke="#09090B" strokeWidth="4" strokeLinecap="round" fill="none" />
+                  </>
+                )}
+
+                {/* Mouth (Smug Smirk with Fang) */}
+                {isSpotted ? (
+                  <ellipse cx="100" cy="122" rx="6" ry="7" fill="#09090B" />
+                ) : (
                   <g>
                     <path
-                      d="M84 126 Q100 138 116 126"
-                      stroke="#291205"
+                      d="M86 118 Q100 126 115 116"
+                      stroke="#09090B"
                       strokeWidth="3.5"
                       strokeLinecap="round"
                       fill="none"
                     />
-                    {/* Tiny sharp fang on corner */}
-                    <path d="M110 127 L114 134 L117 127 Z" fill="#FFFFFF" stroke="#291205" strokeWidth="1.5" />
+                    <polygon points="108,117 112,123 115,116" fill="#FFFFFF" stroke="#09090B" strokeWidth="1" />
                   </g>
-                )}
-
-                {/* Eyes - Sharp, Intense & Slanted (Badass Expression) */}
-                <g>
-                  {/* Left Eye Socket */}
-                  <path
-                    d="M62 82 C65 68, 85 70, 88 84 C85 92, 66 92, 62 82 Z"
-                    fill="#18181B"
-                    stroke="#291205"
-                    strokeWidth="3"
-                  />
-                  {/* Glowing Iris */}
-                  <ellipse
-                    cx={isSpotted ? "75" : "78"}
-                    cy="81"
-                    rx={isSpotted ? "9" : "7.5"}
-                    ry={isSpotted ? "9" : "8"}
-                    fill="#F97316"
-                  />
-                  {/* Pupil */}
-                  <ellipse
-                    cx={isSpotted ? "75" : "80"}
-                    cy="81"
-                    rx={isSpotted ? "5" : "4"}
-                    ry={isSpotted ? "5" : "6"}
-                    fill="#09090B"
-                  />
-                  <circle cx={isSpotted ? "73" : "78"} cy="78" r="2.5" fill="#FFFFFF" />
-
-                  {/* Right Eye Socket */}
-                  <path
-                    d="M138 82 C135 68, 115 70, 112 84 C115 92, 134 92, 138 82 Z"
-                    fill="#18181B"
-                    stroke="#291205"
-                    strokeWidth="3"
-                  />
-                  {/* Glowing Iris */}
-                  <ellipse
-                    cx={isSpotted ? "125" : "122"}
-                    cy="81"
-                    rx={isSpotted ? "9" : "7.5"}
-                    ry={isSpotted ? "9" : "8"}
-                    fill="#F97316"
-                  />
-                  {/* Pupil */}
-                  <ellipse
-                    cx={isSpotted ? "125" : "120"}
-                    cy="81"
-                    rx={isSpotted ? "5" : "4"}
-                    ry={isSpotted ? "5" : "6"}
-                    fill="#09090B"
-                  />
-                  <circle cx={isSpotted ? "127" : "124"} cy="78" r="2.5" fill="#FFFFFF" />
-                </g>
-
-                {/* Eyebrows - Slanted & Confident */}
-                {isSpotted ? (
-                  <>
-                    <path d="M58 64 Q74 52 88 66" stroke="#291205" strokeWidth="4.5" strokeLinecap="round" />
-                    <path d="M142 64 Q126 52 112 66" stroke="#291205" strokeWidth="4.5" strokeLinecap="round" />
-                  </>
-                ) : (
-                  <>
-                    <path d="M60 68 Q76 62 90 74" stroke="#291205" strokeWidth="4.5" strokeLinecap="round" />
-                    <path d="M140 68 Q124 62 110 74" stroke="#291205" strokeWidth="4.5" strokeLinecap="round" />
-                  </>
                 )}
               </svg>
             </div>
