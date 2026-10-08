@@ -6,6 +6,7 @@ import type { MascotPose } from "@/lib/state/machine";
 
 interface MascotProps {
   pose: MascotPose;
+  variant?: "roast" | "teacher";
   speech?: string;
   size?: "sm" | "md" | "lg" | number;
   className?: string;
@@ -15,6 +16,7 @@ interface MascotProps {
 
 export function Mascot({
   pose,
+  variant = "roast",
   speech,
   size = "md",
   className = "",
@@ -22,6 +24,7 @@ export function Mascot({
   onAnimationComplete,
 }: MascotProps) {
   const shouldReduceMotion = useReducedMotion();
+  const isTeacher = variant === "teacher";
 
   const dimensions =
     typeof size === "number"
@@ -32,7 +35,7 @@ export function Mascot({
           lg: { width: 260, height: 260 },
         }[size];
 
-  // Head and body animation variants per pose with lively comedian gestures
+  // Head and body animation variants per pose with lively comedian/teacher gestures
   const headVariants = {
     IDLE: {
       y: [0, -3, 0],
@@ -88,7 +91,7 @@ export function Mascot({
         : { duration: 0.9, repeat: 3, ease: "easeInOut" as const },
     },
     TALKING: {
-      rotate: [-2, 3, -1, 2, 0],
+      rotate: isTeacher ? [-1, 2, -1, 1, 0] : [-2, 3, -1, 2, 0],
       y: [0, -3, 1, -2, 0],
       transition: shouldReduceMotion
         ? undefined
@@ -119,21 +122,27 @@ export function Mascot({
         <div
           role="status"
           aria-live="polite"
-          className="relative max-w-sm px-4 py-2.5 mb-2 text-xs sm:text-sm font-semibold leading-snug rounded-2xl bg-card/95 border-2 border-orange-500/50 text-foreground shadow-2xl backdrop-blur-md text-center"
+          className={`relative max-w-sm px-4 py-2.5 mb-2 text-xs sm:text-sm font-semibold leading-snug rounded-2xl bg-card/95 border-2 ${
+            isTeacher ? "border-emerald-500/50" : "border-orange-500/50"
+          } text-foreground shadow-2xl backdrop-blur-md text-center`}
         >
           <p>{speech}</p>
-          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-orange-500/60" />
+          <div
+            className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] ${
+              isTeacher ? "border-t-emerald-500/60" : "border-t-orange-500/60"
+            }`}
+          />
         </div>
       )}
 
-      {/* Cyber Fox Mascot Layered SVG */}
+      {/* Mascot Layered SVG */}
       <motion.svg
         width={dimensions.width}
         height={dimensions.height}
         viewBox="0 0 200 200"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        aria-label={`GitRoast Cyber Fox Mascot in ${pose} pose`}
+        aria-label={`GitRoast ${isTeacher ? "Teacher / Mentor" : "Cyber Fox"} Mascot in ${pose} pose`}
         className="overflow-visible filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
         onAnimationStart={onAnimationStart}
         onAnimationComplete={onAnimationComplete}
@@ -150,37 +159,79 @@ export function Mascot({
             <stop offset="100%" stopColor="#09090B" />
           </linearGradient>
 
+          {/* Teacher Clean White Lab/Professor Coat Gradient */}
+          <linearGradient id="teacherCoatGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="65%" stopColor="#F8FAFC" />
+            <stop offset="100%" stopColor="#E2E8F0" />
+          </linearGradient>
+
           <radialGradient id="foxAura" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#F97316" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
           </radialGradient>
+
+          <radialGradient id="teacherAura" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#10B981" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
         {/* Ambient Glow */}
-        <circle id="mascot-aura" cx="100" cy="100" r="90" fill="url(#foxAura)" />
+        <circle
+          id="mascot-aura"
+          cx="100"
+          cy="100"
+          r="90"
+          fill={isTeacher ? "url(#teacherAura)" : "url(#foxAura)"}
+        />
 
         {/* ======================================================== */}
-        {/* BODY & TECHWEAR JACKET */}
+        {/* BODY (Tech Jacket or Teacher White Coat) */}
         {/* ======================================================== */}
         <g id="mascot-body">
-          <g id="mascot-jacket">
-            {/* Jacket Shoulders */}
-            <path
-              d="M35 195 C35 150, 65 140, 100 140 C135 140, 165 150, 165 195 Z"
-              fill="url(#techJacket)"
-              stroke="#18181B"
-              strokeWidth="3.5"
-            />
-            {/* Neon Orange Jacket Trim */}
-            <path d="M72 144 L88 185" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
-            <path d="M128 144 L112 185" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
-            <path d="M50 180 L62 175" stroke="#FB923C" strokeWidth="2.5" strokeLinecap="round" />
-            <path d="M150 180 L138 175" stroke="#FB923C" strokeWidth="2.5" strokeLinecap="round" />
+          {isTeacher ? (
+            /* Teacher / Mentor White Coat */
+            <g id="mascot-teacher-coat">
+              {/* White Coat Base */}
+              <path
+                d="M35 195 C35 150, 65 140, 100 140 C135 140, 165 150, 165 195 Z"
+                fill="url(#teacherCoatGrad)"
+                stroke="#0F172A"
+                strokeWidth="3.5"
+              />
+              {/* Emerald & Cyan Lapels */}
+              <path d="M68 142 L86 195" stroke="#10B981" strokeWidth="3" strokeLinecap="round" />
+              <path d="M132 142 L114 195" stroke="#10B981" strokeWidth="3" strokeLinecap="round" />
+              <path d="M78 142 L88 170" stroke="#0284C7" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M122 142 L112 170" stroke="#0284C7" strokeWidth="2.5" strokeLinecap="round" />
 
-            {/* Glowing Fox Crest Pendant */}
-            <polygon points="100,162 106,170 100,178 94,170" fill="#F97316" />
-            <line x1="100" y1="140" x2="100" y2="162" stroke="#F97316" strokeWidth="1.5" />
-          </g>
+              {/* Pocket with Pens */}
+              <rect x="52" y="172" width="20" height="15" rx="3" fill="#E2E8F0" stroke="#0F172A" strokeWidth="2" />
+              {/* Blue & Green Pens */}
+              <rect x="56" y="165" width="3" height="10" rx="1.5" fill="#0284C7" />
+              <rect x="62" y="167" width="3" height="8" rx="1.5" fill="#10B981" />
+
+              {/* Clean Tie / ID Badge */}
+              <polygon points="100,152 105,172 100,182 95,172" fill="#0284C7" stroke="#0F172A" strokeWidth="1.5" />
+            </g>
+          ) : (
+            /* Cyberpunk Dark Techwear Jacket */
+            <g id="mascot-jacket">
+              <path
+                d="M35 195 C35 150, 65 140, 100 140 C135 140, 165 150, 165 195 Z"
+                fill="url(#techJacket)"
+                stroke="#18181B"
+                strokeWidth="3.5"
+              />
+              <path d="M72 144 L88 185" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
+              <path d="M128 144 L112 185" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
+              <path d="M50 180 L62 175" stroke="#FB923C" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M150 180 L138 175" stroke="#FB923C" strokeWidth="2.5" strokeLinecap="round" />
+              <polygon points="100,162 106,170 100,178 94,170" fill="#F97316" />
+              <line x1="100" y1="140" x2="100" y2="162" stroke="#F97316" strokeWidth="1.5" />
+            </g>
+          )}
 
           {/* White Fluffy Chest Fur */}
           <path
@@ -188,87 +239,145 @@ export function Mascot({
             fill="#F8FAFC"
           />
 
-          {/* Arms Layer & Comedian Gestures */}
+          {/* Arms Layer & Comedian / Teacher Gestures */}
           <g id="mascot-arms">
-            {/* Emphatic Talking Gesture Arm */}
-            {isTalking && (
-              <motion.g
-                id="mascot-talking-arm"
-                animate={shouldReduceMotion ? undefined : { rotate: [-6, 10, -4, 8, -6], y: [0, -3, 1, -2, 0] }}
-                transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
-                style={{ originX: "135px", originY: "165px" }}
-              >
-                <path
-                  d="M120 165 C138 152, 160 140, 170 134 C175 130, 180 135, 175 142 C165 154, 142 172, 126 174 Z"
-                  fill="#18181B"
-                  stroke="#F97316"
-                  strokeWidth="2.5"
-                />
-                <circle cx="172" cy="135" r="4.5" fill="#F97316" />
-                <path d="M172 135 L178 131" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" />
-              </motion.g>
-            )}
+            {isTeacher ? (
+              /* Teacher Pointer / Clipboard Gestures */
+              <g id="mascot-teacher-gestures">
+                {/* Teaching Pointer Stick in hand */}
+                <motion.g
+                  id="mascot-teacher-pointer"
+                  animate={
+                    shouldReduceMotion
+                      ? undefined
+                      : { rotate: isTalking ? [-15, 5, -10, 0, -15] : [-5, 5, -5] }
+                  }
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ originX: "140px", originY: "170px" }}
+                >
+                  {/* Sleeve */}
+                  <path d="M130 165 C145 155, 160 145, 165 140" stroke="#FFFFFF" strokeWidth="9" strokeLinecap="round" />
+                  <path d="M130 165 C145 155, 160 145, 165 140" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
+                  {/* Paw */}
+                  <circle cx="165" cy="140" r="5" fill="#F97316" stroke="#0F172A" strokeWidth="1.5" />
+                  {/* Wooden / Golden Teaching Pointer */}
+                  <line x1="165" y1="140" x2="195" y2="90" stroke="#D97706" strokeWidth="3.5" strokeLinecap="round" />
+                  <circle cx="195" cy="90" r="3.5" fill="#FBBF24" />
+                </motion.g>
 
-            {/* Sarcastic Chuckle Covering Mouth Arm */}
-            {isSarcasticLaugh && (
-              <motion.g
-                id="mascot-chuckle-arm"
-                animate={shouldReduceMotion ? undefined : { y: [0, -4, 0, -3, 0], rotate: [0, -3, 3, 0] }}
-                transition={{ duration: 0.5, repeat: Infinity }}
-                style={{ originX: "120px", originY: "140px" }}
-              >
-                <path
-                  d="M108 146 C118 132, 128 126, 134 135 C130 144, 118 154, 108 150 Z"
-                  fill="#18181B"
-                  stroke="#F97316"
-                  strokeWidth="2"
-                />
-                <circle cx="130" cy="132" r="3.5" fill="#F97316" />
-              </motion.g>
-            )}
-
-            {/* Hard Laugh Belly Clutch */}
-            {isLaughHard && (
-              <motion.g
-                id="mascot-belly-laugh"
-                animate={shouldReduceMotion ? undefined : { scale: [1, 1.06, 0.96, 1.04, 1] }}
-                transition={{ duration: 0.6, repeat: Infinity }}
-              >
-                <path d="M45 165 C60 178, 85 180, 100 178" stroke="#F97316" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-                <path d="M155 165 C140 178, 115 180, 100 178" stroke="#F97316" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-                <circle cx="75" cy="174" r="4" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
-                <circle cx="125" cy="174" r="4" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
-              </motion.g>
-            )}
-
-            {/* Crossed Arms for SMUG_POSE and SMIRK */}
-            {(isSmug || isSmirk) && (
-              <g id="mascot-crossed-arms">
-                <path
-                  d="M48 162 C70 178, 130 178, 152 162 C140 182, 60 182, 48 162 Z"
-                  fill="#18181B"
-                  stroke="#F97316"
-                  strokeWidth="2.5"
-                />
-                <circle cx="75" cy="170" r="5" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
-                <circle cx="125" cy="170" r="5" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
+                {/* Left hand resting politely on hip or holding a book */}
+                <path d="M48 165 C38 175, 42 185, 54 180" stroke="#FFFFFF" strokeWidth="8" strokeLinecap="round" />
+                <path d="M48 165 C38 175, 42 185, 54 180" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
+                <circle cx="54" cy="180" r="4.5" fill="#F97316" stroke="#0F172A" strokeWidth="1.5" />
               </g>
-            )}
-
-            {isShrugging && (
+            ) : (
+              /* Cyber Fox Poses */
               <g>
-                <path
-                  d="M25 160 C15 145, 38 135, 48 150 Z"
-                  fill="#18181B"
-                  stroke="#F97316"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M175 160 C185 145, 162 135, 152 150 Z"
-                  fill="#18181B"
-                  stroke="#F97316"
-                  strokeWidth="2"
-                />
+                {/* Emphatic Talking Gesture Arm */}
+                {isTalking && (
+                  <motion.g
+                    id="mascot-talking-arm"
+                    animate={
+                      shouldReduceMotion
+                        ? undefined
+                        : { rotate: [-6, 10, -4, 8, -6], y: [0, -3, 1, -2, 0] }
+                    }
+                    transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ originX: "135px", originY: "165px" }}
+                  >
+                    <path
+                      d="M120 165 C138 152, 160 140, 170 134 C175 130, 180 135, 175 142 C165 154, 142 172, 126 174 Z"
+                      fill="#18181B"
+                      stroke="#F97316"
+                      strokeWidth="2.5"
+                    />
+                    <circle cx="172" cy="135" r="4.5" fill="#F97316" />
+                    <path d="M172 135 L178 131" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" />
+                  </motion.g>
+                )}
+
+                {/* Sarcastic Chuckle Covering Mouth Arm */}
+                {isSarcasticLaugh && (
+                  <motion.g
+                    id="mascot-chuckle-arm"
+                    animate={
+                      shouldReduceMotion
+                        ? undefined
+                        : { y: [0, -4, 0, -3, 0], rotate: [0, -3, 3, 0] }
+                    }
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                    style={{ originX: "120px", originY: "140px" }}
+                  >
+                    <path
+                      d="M108 146 C118 132, 128 126, 134 135 C130 144, 118 154, 108 150 Z"
+                      fill="#18181B"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                    />
+                    <circle cx="130" cy="132" r="3.5" fill="#F97316" />
+                  </motion.g>
+                )}
+
+                {/* Hard Laugh Belly Clutch */}
+                {isLaughHard && (
+                  <motion.g
+                    id="mascot-belly-laugh"
+                    animate={
+                      shouldReduceMotion
+                        ? undefined
+                        : { scale: [1, 1.06, 0.96, 1.04, 1] }
+                    }
+                    transition={{ duration: 0.6, repeat: Infinity }}
+                  >
+                    <path
+                      d="M45 165 C60 178, 85 180, 100 178"
+                      stroke="#F97316"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                    <path
+                      d="M155 165 C140 178, 115 180, 100 178"
+                      stroke="#F97316"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                    <circle cx="75" cy="174" r="4" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
+                    <circle cx="125" cy="174" r="4" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
+                  </motion.g>
+                )}
+
+                {/* Crossed Arms for SMUG_POSE and SMIRK */}
+                {(isSmug || isSmirk) && (
+                  <g id="mascot-crossed-arms">
+                    <path
+                      d="M48 162 C70 178, 130 178, 152 162 C140 182, 60 182, 48 162 Z"
+                      fill="#18181B"
+                      stroke="#F97316"
+                      strokeWidth="2.5"
+                    />
+                    <circle cx="75" cy="170" r="5" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
+                    <circle cx="125" cy="170" r="5" fill="#27272A" stroke="#F97316" strokeWidth="1.5" />
+                  </g>
+                )}
+
+                {isShrugging && (
+                  <g>
+                    <path
+                      d="M25 160 C15 145, 38 135, 48 150 Z"
+                      fill="#18181B"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M175 160 C185 145, 162 135, 152 150 Z"
+                      fill="#18181B"
+                      stroke="#F97316"
+                      strokeWidth="2"
+                    />
+                  </g>
+                )}
               </g>
             )}
           </g>
@@ -285,7 +394,6 @@ export function Mascot({
         >
           {/* EARS */}
           <g id="mascot-ears">
-            {/* Left Ear */}
             <g id="mascot-left-ear">
               <path
                 d="M32 90 C20 45, 36 10, 68 24 C78 28, 76 65, 68 90 Z"
@@ -301,7 +409,6 @@ export function Mascot({
               <path d="M46 70 L55 64 L50 76 L62 70" stroke="#E2E8F0" strokeWidth="2" strokeLinecap="round" />
             </g>
 
-            {/* Right Ear */}
             <g id="mascot-right-ear">
               <path
                 d="M168 90 C180 45, 164 10, 132 24 C122 28, 124 65, 132 90 Z"
@@ -368,7 +475,7 @@ export function Mascot({
             <ellipse cx="97" cy="103" rx="2" ry="1" fill="#FFFFFF" opacity="0.7" />
           </g>
 
-          {/* EYES with Sarcastic Comedic Inflections */}
+          {/* EYES */}
           <g id="mascot-eyes">
             {/* Left Eye */}
             <g id="mascot-left-eye">
@@ -396,7 +503,7 @@ export function Mascot({
                     cy="81"
                     rx={isSmug ? "5.5" : "6.5"}
                     ry={isSmug ? "5" : "7"}
-                    fill="#F97316"
+                    fill={isTeacher ? "#0284C7" : "#F97316"}
                   />
                   <ellipse
                     cx={isSearching ? "75" : isSmug || isSmirk ? "80" : "79"}
@@ -436,7 +543,7 @@ export function Mascot({
                     cy="81"
                     rx={isSmug ? "5.5" : "6.5"}
                     ry={isSmug ? "5" : "7"}
-                    fill="#F97316"
+                    fill={isTeacher ? "#0284C7" : "#F97316"}
                   />
                   <ellipse
                     cx={isSearching ? "125" : isSmug || isSmirk ? "120" : "121"}
@@ -451,12 +558,50 @@ export function Mascot({
             </g>
           </g>
 
-          {/* EYEBROWS (Cocked Eyebrow for Sarcasm) */}
+          {/* TEACHER GLASSES / GOGGLES (Rendered if variant === 'teacher') */}
+          {isTeacher && (
+            <g id="mascot-glasses">
+              {/* Left Lens Frame */}
+              <rect
+                x="60"
+                y="68"
+                width="34"
+                height="26"
+                rx="8"
+                fill="#0284C7"
+                fillOpacity="0.12"
+                stroke="#0F172A"
+                strokeWidth="3.5"
+              />
+              <path d="M65 73 L83 73" stroke="#38BDF8" strokeWidth="1.5" strokeLinecap="round" opacity="0.85" />
+              {/* Right Lens Frame */}
+              <rect
+                x="106"
+                y="68"
+                width="34"
+                height="26"
+                rx="8"
+                fill="#0284C7"
+                fillOpacity="0.12"
+                stroke="#0F172A"
+                strokeWidth="3.5"
+              />
+              <path d="M111 73 L129 73" stroke="#38BDF8" strokeWidth="1.5" strokeLinecap="round" opacity="0.85" />
+              {/* Center Bridge */}
+              <path d="M94 78 C98 73, 102 73, 106 78" stroke="#0F172A" strokeWidth="3.5" fill="none" />
+              {/* Temples */}
+              <path d="M60 76 L44 72" stroke="#0F172A" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M140 76 L156 72" stroke="#0F172A" strokeWidth="2.5" strokeLinecap="round" />
+            </g>
+          )}
+
+          {/* EYEBROWS */}
           <g id="mascot-eyebrows">
-            {/* Left Eyebrow (Cocked high for SMIRK and TALKING) */}
             <path
               d={
-                isSmirk || isTalking
+                isTeacher
+                  ? "M62 62 Q76 56 90 64"
+                  : isSmirk || isTalking
                   ? "M62 58 Q76 48 90 60"
                   : isSurprised
                   ? "M62 66 Q74 54 88 66"
@@ -469,10 +614,11 @@ export function Mascot({
               strokeLinecap="round"
               fill="none"
             />
-            {/* Right Eyebrow */}
             <path
               d={
-                isSurprised
+                isTeacher
+                  ? "M138 64 Q124 56 110 62"
+                  : isSurprised
                   ? "M138 66 Q126 54 112 66"
                   : isLaughing
                   ? "M138 70 Q124 60 110 70"
@@ -500,8 +646,20 @@ export function Mascot({
                 transition={{ duration: 0.22, repeat: Infinity }}
                 style={{ originX: "100px", originY: "118px" }}
               />
+            ) : isTeacher ? (
+              // Warm, Encouraging Teacher Smile
+              <g id="mascot-teacher-smile">
+                <path
+                  d="M86 118 Q100 130 114 118"
+                  stroke="#09090B"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <circle cx="84" cy="116" r="1.5" fill="#09090B" />
+                <circle cx="116" cy="116" r="1.5" fill="#09090B" />
+              </g>
             ) : isLaughHard ? (
-              // Wide open laughing mouth with fangs
               <g>
                 <path
                   d="M80 116 Q100 144 120 116 Z"
@@ -534,7 +692,6 @@ export function Mascot({
                 fill="none"
               />
             ) : (
-              // Default / Smirk / Smug Mouth with Fang
               <g>
                 <path
                   d="M86 118 Q100 126 115 116"
@@ -549,7 +706,7 @@ export function Mascot({
           </g>
 
           {/* TEAR DROP (For LAUGH_HARD) */}
-          {isLaughHard && (
+          {!isTeacher && isLaughHard && (
             <motion.path
               id="mascot-tear"
               d="M136 84 C140 84, 144 88, 142 92 C140 96, 136 98, 136 98 C136 98, 132 96, 130 92 C128 88, 132 84, 136 84 Z"

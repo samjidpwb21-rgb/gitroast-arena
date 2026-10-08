@@ -121,6 +121,8 @@ class AudioManager {
       if (name === "smirk") return this.synth.playSmugSnicker(volume);
       if (name === "laugh_sarcastic") return this.synth.playSarcasticChuckle(volume);
       if (name === "laugh_hard") return this.synth.playMockingCackle(volume);
+      if (name === "chime") return this.synth.playChime(volume);
+      if (name === "checkmark") return this.synth.playCheckmark(volume);
     }
   }
 

@@ -365,6 +365,67 @@ export class WebAudioSynthesizer {
     }
   }
 
+  /**
+   * Supportive Mentor Chime (uplifting multi-harmonic sparkle)
+   */
+  public playChime(volume: number = 0.5): void {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      const freqs = [587.33, 880.0, 1174.66]; // D5, A5, D6
+      const offsets = [0, 0.08, 0.16];
+
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + offsets[idx]!);
+
+        gain.gain.setValueAtTime(0, ctx.currentTime + offsets[idx]!);
+        gain.gain.linearRampToValueAtTime(volume * 0.35, ctx.currentTime + offsets[idx]! + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offsets[idx]! + 0.5);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime + offsets[idx]!);
+        osc.stop(ctx.currentTime + offsets[idx]! + 0.52);
+      });
+    } catch {
+      // Ignore
+    }
+  }
+
+  /**
+   * Action Checklist Checkmark Ping
+   */
+  public playCheckmark(volume: number = 0.5): void {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
+      osc.frequency.exponentialRampToValueAtTime(987.77, ctx.currentTime + 0.08); // B5
+
+      gain.gain.setValueAtTime(volume * 0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.13);
+    } catch {
+      // Ignore
+    }
+  }
+
   public close(): void {
     if (this.ctx && this.ctx.state !== "closed") {
       this.ctx.close().catch(() => {});

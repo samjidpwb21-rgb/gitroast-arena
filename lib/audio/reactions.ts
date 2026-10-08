@@ -160,3 +160,26 @@ export function getSpokenDelivery(card: RoastCard): string {
       return `${rng.pick(SAVAGE_INTROS)} ... ${card.text} ... ${rng.pick(SAVAGE_OUTROS)}`;
   }
 }
+
+export function getSupportiveGuidance(
+  action: { title: string; why: string; impact: number; simulatedScore: number },
+  stepIndex: number,
+  totalSteps: number
+): string {
+  const seed = hashString(`mentor-${action.title}-${stepIndex}`);
+  const rng = new SeededRNG(seed);
+
+  const mentorOpeners = [
+    `Step ${stepIndex + 1} of ${totalSteps}: Let's work on ${action.title}.`,
+    `Here is our next high-leverage fix: ${action.title}.`,
+    `For action item number ${stepIndex + 1}, we're focusing on ${action.title}.`,
+  ];
+
+  const mentorClosers = [
+    `Completing this will boost your score by plus ${action.impact} points, raising your score to ${action.simulatedScore}! Let's check off these action items together.`,
+    `This simple adjustment gives an immediate plus ${action.impact} points impact. You've got this!`,
+    `By following the checklist below, we will secure plus ${action.impact} points towards your target. Steady progress wins the race!`,
+  ];
+
+  return `${rng.pick(mentorOpeners)} ... ${action.why} ... ${rng.pick(mentorClosers)}`;
+}

@@ -33,7 +33,9 @@ export type SFXName =
   | "rimshot"
   | "smirk"
   | "laugh_sarcastic"
-  | "laugh_hard";
+  | "laugh_hard"
+  | "chime"
+  | "checkmark";
 
 export interface ReactionConfig {
   mascotPose: "SMIRK" | "LAUGH_SARCASTIC" | "LAUGH_HARD";
