@@ -15,6 +15,7 @@ import { RescuePlanView } from "./RescuePlanView";
 import { RecruiterView } from "./RecruiterView";
 import { EvidenceDrawer } from "./EvidenceDrawer";
 import { Mascot } from "./Mascot";
+import { AestheticBackground } from "./AestheticBackground";
 import {
   BarChart2,
   Flame,
@@ -155,21 +156,10 @@ export const ArenaView: React.FC = () => {
   return (
     <div
       onMouseMove={handlePageMouseMove}
-      className="min-h-screen bg-background text-foreground flex flex-col items-center relative overflow-x-hidden"
+      className="min-h-screen bg-transparent text-foreground flex flex-col items-center relative overflow-x-hidden"
     >
-      {/* Dynamic Cursor-following Ambient Glow */}
-      <div
-        className="fixed pointer-events-none -z-10 w-[500px] h-[500px] rounded-full bg-orange-500/8 blur-[120px] transition-all duration-300 ease-out"
-        style={{
-          left: `${cursorPos.x - 250}px`,
-          top: `${cursorPos.y - 250}px`,
-        }}
-      />
-
-      {/* Main static backdrop */}
-      <div className="fixed inset-0 pointer-events-none -z-20 flex items-center justify-center">
-        <div className="w-[700px] h-[700px] bg-primary/5 rounded-full blur-[160px]" />
-      </div>
+      {/* Aesthetic Cyber Background with Grid, Ambient Mesh, and Floating Embers */}
+      <AestheticBackground cursorPos={cursorPos} />
 
       {/* Main App Header */}
       <header className="w-full border-b border-border/60 bg-background/80 backdrop-blur-md sticky top-0 z-40">
