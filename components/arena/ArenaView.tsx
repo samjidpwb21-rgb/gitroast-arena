@@ -161,9 +161,9 @@ export const ArenaView: React.FC = () => {
       {/* Aesthetic Cyber Background with Grid, Ambient Mesh, and Floating Embers */}
       <AestheticBackground cursorPos={cursorPos} />
 
-      {/* Main App Header */}
-      <header className="w-full border-b border-border/60 bg-background/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      {/* Main App Header matching reference design */}
+      <header className="w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <button
             onClick={handleReset}
             className="flex items-center gap-2.5 font-black text-lg sm:text-xl tracking-tight hover:opacity-80 transition-opacity"
@@ -176,43 +176,67 @@ export const ArenaView: React.FC = () => {
             </span>
           </button>
 
-          {state.result && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-border bg-card hover:bg-secondary transition-colors"
-                aria-label="Share Analysis Result"
-              >
-                {copiedLink ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>Copied Link</span>
-                  </>
-                ) : (
-                  <>
-                    <Share2 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Share</span>
-                  </>
-                )}
-              </button>
+          <div className="flex items-center gap-3 sm:gap-6">
+            <nav className="hidden md:flex items-center gap-5 text-xs font-mono text-muted-foreground">
+              <a href="#how-it-works" className="hover:text-foreground transition-colors">
+                How it works
+              </a>
+              <span className="hover:text-foreground transition-colors cursor-pointer">
+                Leaderboard
+              </span>
+              <span className="hover:text-foreground transition-colors cursor-pointer">
+                About
+              </span>
+            </nav>
 
+            {state.result ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleShare}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-border bg-card hover:bg-secondary transition-colors"
+                  aria-label="Share Analysis Result"
+                >
+                  {copiedLink ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      <span>Copied Link</span>
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Share</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={handleReset}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">New Analysis</span>
+                </button>
+              </div>
+            ) : (
               <button
-                onClick={handleReset}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                onClick={() => {
+                  const input = document.getElementById("github-username");
+                  if (input) input.focus();
+                }}
+                className="px-3.5 py-1.5 bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/40 text-orange-400 font-mono font-bold text-xs rounded-lg transition-colors"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">New Analysis</span>
+                Enter Arena
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="w-full flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <main className="w-full flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Stage 1: Landing Form */}
         {state.stage === "idle" && (
-          <div className="py-8">
+          <div className="py-4">
             <LandingHero onSubmit={handleStartAnalysis} isLoading={false} />
           </div>
         )}
