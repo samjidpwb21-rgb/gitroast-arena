@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateAnalyzeInput } from "@/lib/validation/username";
-import { fetchGitHubSnapshot } from "@/lib/github/client";
+import { analyzePortfolio, generateAnalysisId } from "@/lib/analysis/pipeline";
 import { GitHubApiError } from "@/lib/github/errors";
 import { ipRateLimiter, refreshRateLimiter } from "@/lib/cache/ratelimit";
 import { normalizeGitHubResponse, type RawGraphQLResponse } from "@/lib/github/normalize";
+import { extractCalculatedFacts } from "@/lib/analysis/facts";
+import { calculateCategoryScores } from "@/lib/analysis/scoring";
+import { generateEvidence } from "@/lib/analysis/evidence";
+import { selectRoastCards } from "@/lib/roast/select";
+import { generateRescuePlan } from "@/lib/rescue/simulator";
+import { generateRecruiterSummary } from "@/lib/analysis/recruiter";
+import { validateAnalysisResultInvariants, AnalysisResultSchema, type AnalysisResult } from "@/types";
+import { ENGINE_VERSION } from "@/config/scoring";
 
 // Import test fixtures strictly for test environment
 import perfectFixture from "@/tests/fixtures/fixture-perfect.json";
@@ -99,45 +107,66 @@ export async function POST(req: NextRequest) {
       else if (testFixture === "empty") rawFixture = emptyFixture as unknown as RawGraphQLResponse;
 
       if (rawFixture) {
-        const snapshot = normalizeGitHubResponse(rawFixture);
-        return NextResponse.json({
-          success: true,
-          snapshot,
-          fromCache: false,
-          summary: {
+        const clock = new Date();
+        const snapshot = normalizeGitHubResponse(rawFixture, clock);
+        const facts = extractCalculatedFacts(snapshot, clock);
+        const scores = calculateCategoryScores(facts, snapshot);
+        const evidence = generateEvidence(facts, snapshot);
+        const roasts = selectRoastCards({ facts, snapshot, evidence, roastLevel });
+        const rescue = generateRescuePlan({ facts, snapshot, scores, evidence, clock });
+        const recruiter = generateRecruiterSummary({ facts, scores, evidence, targetRole });
+
+        const result: AnalysisResult = {
+          id: generateAnalysisId(),
+          metadata: {
             username: snapshot.profile.login,
-            accountType: snapshot.profile.accountType,
-            totalRepositories: snapshot.totalRepositoryCount,
-            flagshipCount: snapshot.repositories.filter((r) => r.isFlagship).length,
             roastLevel,
             targetRole,
+            generatedAt: clock.toISOString(),
+            snapshotFetchedAt: snapshot.fetchedAt,
+            fromCache: false,
+            aiEnhanced: false,
+            engineVersion: ENGINE_VERSION,
+            insufficientData: facts.insufficientData,
           },
+          facts,
+          scores,
+          evidence,
+          roasts,
+          recruiter,
+          rescue,
+        };
+
+        const invariantCheck = validateAnalysisResultInvariants(result);
+        if (!invariantCheck.valid) {
+          return NextResponse.json(
+            { success: false, error: "Invariant check failed in test fixture", details: invariantCheck.errors },
+            { status: 500 }
+          );
+        }
+
+        return NextResponse.json({
+          success: true,
+          result: AnalysisResultSchema.parse(result),
+          fromCache: false,
         });
       }
     }
   }
 
-  // 5. Fetch GitHub Snapshot (Live GraphQL call)
+  // 5. Execute Full Analysis Pipeline (Live GitHub API)
   try {
-    const { snapshot, fromCache } = await fetchGitHubSnapshot({
+    const { result, fromCache } = await analyzePortfolio({
       username,
+      roastLevel,
+      targetRole,
       refresh,
     });
 
-    const flagshipCount = snapshot.repositories.filter((r) => r.isFlagship).length;
-
     return NextResponse.json({
       success: true,
-      snapshot,
+      result,
       fromCache,
-      summary: {
-        username: snapshot.profile.login,
-        accountType: snapshot.profile.accountType,
-        totalRepositories: snapshot.totalRepositoryCount,
-        flagshipCount,
-        roastLevel,
-        targetRole,
-      },
     });
   } catch (err: unknown) {
     if (err instanceof GitHubApiError) {
@@ -153,10 +182,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const message = err instanceof Error ? err.message : "An unexpected error occurred.";
     return NextResponse.json(
       {
         success: false,
-        error: "An unexpected error occurred while analyzing the profile.",
+        error: message,
       },
       { status: 500 }
     );

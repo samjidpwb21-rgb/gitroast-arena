@@ -40,7 +40,7 @@ describe("/api/analyze Route", () => {
     expect(json.field).toBe("roastLevel");
   });
 
-  it("returns normalized snapshot when test fixture is requested", async () => {
+  it("returns full AnalysisResult when test fixture is requested", async () => {
     const req = createRequest(
       { username: "alexdev", roastLevel: "savage", targetRole: "Backend Dev" },
       { "x-test-fixture": "perfect" }
@@ -50,10 +50,14 @@ describe("/api/analyze Route", () => {
 
     const json = await res.json();
     expect(json.success).toBe(true);
-    expect(json.snapshot.profile.login).toBe("alexdev");
-    expect(json.summary.flagshipCount).toBeGreaterThanOrEqual(3);
-    expect(json.summary.roastLevel).toBe("savage");
-    expect(json.summary.targetRole).toBe("Backend Dev");
+    expect(json.result.id.startsWith("ar_")).toBe(true);
+    expect(json.result.metadata.username).toBe("alexdev");
+    expect(json.result.metadata.roastLevel).toBe("savage");
+    expect(json.result.metadata.targetRole).toBe("Backend Dev");
+    expect(json.result.scores.portfolioReadiness).toBeGreaterThanOrEqual(70);
+    expect(json.result.roasts.length).toBeGreaterThanOrEqual(1);
+    expect(json.result.recruiter.verdict).toBe("strong");
+    expect(json.result.rescue.potentialScore).toBeGreaterThanOrEqual(json.result.scores.portfolioReadiness);
   });
 
   it("enforces IP rate limiting when requests exceed capacity", async () => {
