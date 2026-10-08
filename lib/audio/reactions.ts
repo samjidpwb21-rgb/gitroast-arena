@@ -49,30 +49,114 @@ export function getReactionForRoast(roastId: string, severity: Severity): Reacti
   }
 }
 
+// Standup Comedian Mannerisms & Phrase Banks
+const MILD_INTROS = [
+  "Heh, let's take a peek at this one:",
+  "Okay, check this out:",
+  "So look at this little gem:",
+  "Wait for it...",
+  "Let's see what we've got here:",
+  "I'll start off gentle, but look:",
+  "Heh, get a load of this:",
+  "Here's an interesting life choice:",
+  "Not gonna lie, look at this:",
+  "A quick observation right here:",
+] as const;
+
+const MILD_OUTROS = [
+  "Classic developer move.",
+  "Not terrible, but yeah.",
+  "Gotta love the optimism.",
+  "We've all been there, honestly.",
+  "Clean it up and you're golden.",
+  "At least you pushed code.",
+  "Hey, it works on your machine right?",
+  "Solid attempt, points for participation.",
+] as const;
+
+const MEDIUM_INTROS = [
+  "Oh boy, here we go...",
+  "Alright, listen to this one:",
+  "Wait for it... wait for it...",
+  "Hold onto your seats for this:",
+  "You're not gonna believe this one:",
+  "Let's talk about this masterpiece:",
+  "Now this is where it gets spicy:",
+  "Look, I didn't want to bring this up, but:",
+  "Heh heh, take a look at this:",
+  "Behold, the commit history of legends:",
+] as const;
+
+const MEDIUM_OUTROS = [
+  "I mean, seriously?",
+  "Gotta love the confidence!",
+  "Legendary architectural decision right there.",
+  "Even Stack Overflow can't rescue that.",
+  "My terminal is crying right now.",
+  "That's definitely going on the resume, huh?",
+  "Ship it to production on a Friday!",
+  "No notes. Just pure chaos.",
+  "Truly a work of art.",
+] as const;
+
+const SHARP_INTROS = [
+  "Bruh... hold onto your keyboard:",
+  "Look at this absolute disaster:",
+  "Brace yourselves, folks:",
+  "I have no words, but I have a roast:",
+  "Check your git log, because yikes:",
+  "Wait for it... boom:",
+  "Someone call the senior engineer right now:",
+  "You thought nobody would notice this, huh?",
+  "Alert the security team, we found it:",
+  "Take a deep breath before hearing this:",
+] as const;
+
+const SHARP_OUTROS = [
+  "Now that is painful.",
+  "Ouch, that's gonna leave a permanent mark.",
+  "Unreal. Simply unreal.",
+  "Delete the repo and start a farm.",
+  "That violated three Geneva Conventions of coding.",
+  "My CPU just threw a thermal throttle error from that.",
+  "Even git reflog can't save you from this.",
+  "That's going straight into the engineering Hall of Shame.",
+] as const;
+
+const SAVAGE_INTROS = [
+  "Oof! Call an ambulance immediately!",
+  "Absolute crime scene right here:",
+  "Holy smoke, avert your eyes if you're faint of heart:",
+  "Hold onto your soul, this is brutal:",
+  "Ladies and gentlemen, the smoking gun:",
+  "I hope you have backup copies of your dignity for this:",
+  "Nuclear meltdown detected in the repository:",
+  "Prepare for maximum emotional damage:",
+] as const;
+
+const SAVAGE_OUTROS = [
+  "Somebody get this entire repo a medic!",
+  "Total violation! Absolutely scorched earth!",
+  "Rest in peace to this entire commit history.",
+  "I am speechless. The compiler is speechless.",
+  "You just got roasted into the next release cycle.",
+  "This needs to be sealed in concrete for 10,000 years.",
+  "Clean up the ashes and try again in your next lifetime.",
+  "Game over. Press F to pay respects.",
+] as const;
+
 export function getSpokenDelivery(card: RoastCard): string {
   const seed = hashString(card.id);
   const rng = new SeededRNG(seed);
 
-  const mildIntros = ["Heh.", "Okay, check this out:", "So look at this:"];
-  const mildOutros = ["Classic dev move.", "Not terrible, but yeah.", "Gotta love the optimism."];
-
-  const mediumIntros = ["Oh boy.", "Alright, listen to this:", "Wait for it..."];
-  const mediumOutros = ["I mean, seriously?", "Gotta love the confidence.", "Legendary."];
-
-  const sharpIntros = ["Bruh...", "Look at this disaster:", "Hold onto your seat:"];
-  const sharpOutros = ["Now that's painful.", "Ouch, that stings.", "Unreal."];
-
-  const savageIntros = ["Oof! Call an ambulance!", "Absolute crime scene right here:", "Holy smoke:"];
-  const savageOutros = ["Somebody get this repo a medic!", "Total violation!", "Rest in peace."];
-
   switch (card.severity) {
     case "mild":
-      return `${rng.pick(mildIntros)} ... ${card.text} ... ${rng.pick(mildOutros)}`;
+      return `${rng.pick(MILD_INTROS)} ... ${card.text} ... ${rng.pick(MILD_OUTROS)}`;
     case "medium":
-      return `${rng.pick(mediumIntros)} ... ${card.text} ... ${rng.pick(mediumOutros)}`;
+      return `${rng.pick(MEDIUM_INTROS)} ... ${card.text} ... ${rng.pick(MEDIUM_OUTROS)}`;
     case "sharp":
-      return `${rng.pick(sharpIntros)} ... ${card.text} ... ${rng.pick(sharpOutros)}`;
+      return `${rng.pick(SHARP_INTROS)} ... ${card.text} ... ${rng.pick(SHARP_OUTROS)}`;
     case "savage":
-      return `${rng.pick(savageIntros)} ... ${card.text} ... ${rng.pick(savageOutros)}`;
+      return `${rng.pick(SAVAGE_INTROS)} ... ${card.text} ... ${rng.pick(SAVAGE_OUTROS)}`;
   }
 }

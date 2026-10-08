@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { VoiceSettingsSchema, DEFAULT_VOICE_SETTINGS } from "@/lib/audio/types";
-import { getReactionForRoast } from "@/lib/audio/reactions";
+import { getReactionForRoast, getSpokenDelivery } from "@/lib/audio/reactions";
 import { DISALLOWED_SAFETY_TERMS } from "@/config/roasts";
+import type { RoastCard } from "@/types";
 
 describe("Voice Settings Schema Validation", () => {
   it("validates default voice settings successfully", () => {
@@ -22,8 +23,17 @@ describe("Voice Settings Schema Validation", () => {
   });
 });
 
-describe("Deterministic Reaction Mapping", () => {
+describe("Deterministic Reaction Mapping & Spoken Delivery", () => {
   const roastId = "roast-test-vector-12345";
+  const dummyCard: RoastCard = {
+    id: roastId,
+    category: "missingDemos",
+    title: "Stealth Mode Projects",
+    text: "You have 5 repositories with zero live URLs.",
+    severity: "sharp",
+    evidenceIds: ["ev-1"],
+    source: "template",
+  };
 
   it("produces deterministic mascot pose and SFX for mild severity", () => {
     const r1 = getReactionForRoast(roastId, "mild");
@@ -63,9 +73,17 @@ describe("Deterministic Reaction Mapping", () => {
     expect(r1.onomatopoeia).toBeDefined();
     expect(r1).toEqual(r2);
   });
+
+  it("generates expressive standup spoken delivery deterministically", () => {
+    const s1 = getSpokenDelivery(dummyCard);
+    const s2 = getSpokenDelivery(dummyCard);
+
+    expect(s1).toContain(dummyCard.text);
+    expect(s1).toEqual(s2);
+  });
 });
 
-describe("Content Safety for Comic Show Visual Text", () => {
+describe("Content Safety for Comic Show Visual Text and Spoken Phrases", () => {
   const comicWords = [
     "BURN!",
     "OOF!",
@@ -77,9 +95,15 @@ describe("Content Safety for Comic Show Visual Text", () => {
     "Comic Roast Show",
     "Why am I roasted?",
     "Why am I roasted? View verifiable evidence",
+    "Wait for it...",
+    "Hold onto your seats for this:",
+    "Bruh... hold onto your keyboard:",
+    "Oof! Call an ambulance immediately!",
+    "Somebody get this entire repo a medic!",
+    "Total violation! Absolutely scorched earth!",
   ];
 
-  it("ensures all onomatopoeia bursts and UI button text pass strict content safety", () => {
+  it("ensures all onomatopoeia bursts, UI button text, and comedian phrases pass strict content safety", () => {
     for (const word of comicWords) {
       const lower = word.toLowerCase();
       for (const disallowed of DISALLOWED_SAFETY_TERMS) {
